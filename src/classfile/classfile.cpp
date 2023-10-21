@@ -1,6 +1,6 @@
 
-#include "classfile.h"
-#include "binary_io.h"
+#include "classfile//classfile.h"
+#include "util/binary_io.h"
 
 std::istream &operator>>(std::istream &is, ClassFile &classFile) {
 

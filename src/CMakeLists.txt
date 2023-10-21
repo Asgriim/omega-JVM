@@ -1,0 +1,5 @@
+file(GLOB_RECURSE SRC_FILES "./*.cpp")
+file(GLOB_RECURSE HEADER_FILE ${INCLUDE_DIR}/*.h)
+
+target_sources(${EXEC_NAME} PRIVATE ${SRC_FILES} ${HEADER_FILE})
+

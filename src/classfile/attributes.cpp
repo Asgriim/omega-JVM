@@ -1,6 +1,6 @@
 
-#include "attributes.h"
-#include "binary_io.h"
+#include "classfile/attributes.h"
+#include "util/binary_io.h"
 
 std::istream &operator>>(std::istream &is, AttributeInfo &attributeInfo) {
     read_big_endian(is,(char*)&attributeInfo.attributeNameIndex, sizeof(attributeInfo.attributeNameIndex));

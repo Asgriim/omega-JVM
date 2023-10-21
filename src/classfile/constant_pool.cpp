@@ -1,8 +1,8 @@
 
-#include "constant_pool.h"
+#include "classfile/constant_pool.h"
 
 #include <iostream>
-#include "binary_io.h"
+#include "util/binary_io.h"
 
 //todo рефактор
 std::istream &operator>>(std::istream &is, CpInfo &cpInfo) {

@@ -2,7 +2,7 @@
 #include "classfile/classfile.h"
 #include <fstream>
 #include <iostream>
-#include "binary_io.h"
+#include "util/binary_io.h"
 void print_cpInf(CpInfo &cpInfo){
     std::cout  << "tag " << static_cast<int>(cpInfo.tag) << "\n";
 }
@@ -39,7 +39,7 @@ void print_classfile(ClassFile &classFile) {
 
 int main() {
     std::ifstream file;
-    file.open("/home/asgrim/CLionProjects/omega-jvm/Aboba.class",std::ios::binary | std::ios::in);
+    file.open("/home/asgrim/CLionProjects/omega-jvm/java_files/Aboba.class",std::ios::binary | std::ios::in);
     uint32_t tes = 0;
 //    read_big_endian(file,(char*)&tes, sizeof(tes));
 //    std::cout << std::hex << tes;
