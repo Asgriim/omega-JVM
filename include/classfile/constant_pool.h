@@ -8,7 +8,6 @@
 #include <string>
 #include <memory>
 
-
 enum class CONSTANT_POOL_TAG : uint8_t {
     UTF8_CPT                 = 1,
     INTEGER_CPT              = 3,
@@ -29,28 +28,93 @@ enum class CONSTANT_POOL_TAG : uint8_t {
     PACKAGE_CPT              = 20
 };
 
-class CpInfo {
-
-    friend std::istream& operator>> (std::istream &is, CpInfo &cpInfo);
-
-    public:
-        CONSTANT_POOL_TAG tag;
-        std::unique_ptr<uint8_t[]> info;
+struct CpInfo {
+    virtual ~CpInfo() = default;
+    CONSTANT_POOL_TAG tag;
 };
 
 //todo подумать нужно ли оно
 
-class ClassInfoConstant {
-    public:
-        CONSTANT_POOL_TAG tag;
-        uint16_t nameIndex;
+struct ClassInfoConst : public CpInfo{
+    uint16_t nameIndex;
 };
 
-class Utf8InfoConstant {
-    CONSTANT_POOL_TAG tag;
+//todo UTF8 support.....
+struct Utf8InfoConst : public CpInfo {
     uint16_t length;
     std::string bytes;
 };
 
-//todo добавлять по необходимости
+struct RefInfoConst : public CpInfo {
+    uint16_t classIndex;
+    uint16_t nameAndTypeIndex;
+};
+
+struct FieldRefConst : public RefInfoConst {
+
+};
+
+struct MethodRefConst : public RefInfoConst {
+
+};
+
+struct InterfaceMethRefConst : public RefInfoConst {
+
+};
+
+struct StringInfoConst : public CpInfo {
+    uint16_t stringInd;
+};
+
+struct IntegerConst : public CpInfo {
+    uint32_t bytes;
+};
+
+struct FloatConst : public CpInfo {
+    uint32_t bytes;
+};
+
+struct LongConst : public CpInfo {
+    uint32_t highBytes;
+    uint32_t lowBytes;
+};
+
+struct DoubleConst : public CpInfo {
+    uint32_t highBytes;
+    uint32_t lowBytes;
+};
+
+struct NameAndTypeConst : public CpInfo {
+    uint16_t nameIndex;
+    uint16_t descriptorIndex;
+};
+
+struct MethodHandleConst : public CpInfo {
+    uint8_t referenceKind;
+    uint16_t referenceInd;
+};
+
+
+struct MethodTypeConst : public CpInfo {
+    uint16_t descriptorInd;
+};
+
+struct DynamicConst : public CpInfo {
+    uint16_t bootstrapMethodAttrInd;
+    uint16_t nameAndTypeIndex;
+};
+
+struct InvokeDynamicConst : public DynamicConst {
+
+};
+
+struct ModuleInfoConst : CpInfo {
+    uint16_t nameInd;
+};
+
+struct PackageInfoConst : ModuleInfoConst {
+
+};
+
+
 #endif //OMEGA_JVM_CONSTANT_POOL_H
