@@ -7,6 +7,8 @@
 #include "classfile.h"
 #include "classfile_stream.h"
 
+
+//todo 30 attrs :(
 static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
     {"Code",CODE_AT},
     {"BootstrapMethods",BOOTSTRAP_METHODS_AT}

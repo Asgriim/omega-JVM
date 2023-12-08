@@ -62,7 +62,6 @@ bool ClassFileStream::isEOF() {
 void ClassFileStream::getFileLen() {
     m_is.seekg(0, std::ios::end);
     m_endPos = m_is.tellg();
-    std::cout << "end file " << m_endPos << "\n";
     m_is.seekg(0,std::ios::beg);
 }
 

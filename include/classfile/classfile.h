@@ -34,6 +34,8 @@ class MethodInfo : public GeneralInfo{
 //todo raii убрать конструкторы копирования
 struct ClassFile {
 
+
+    //TODO: delete later
     //constants starts from 1
     template<class T>
     T& getConstant(uint64_t ind) {

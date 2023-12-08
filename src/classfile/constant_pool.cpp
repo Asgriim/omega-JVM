@@ -2,7 +2,6 @@
 #include "classfile/constant_pool.h"
 
 #include <iostream>
-#include "util/binary_io.h"
 
 //todo рефактор
 //std::istream &operator>>(std::istream &is, CpInfo &cpInfo) {
