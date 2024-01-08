@@ -8,15 +8,25 @@ interface A {
 public class Aboba implements A {
     public static int sus = 0;
     public static int s = 1;
-    public static void addSus() {
+
+    public static int addSus() {
         sus++;
+        return sus;
     }
+
     public static void main(String[] args) {
         // Press Alt+Enter with your caret at the highlighted text to see how
         // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+
         addSus();
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
+        if (sus > 0) {
+            int a = addSus();
+            a++;
+        }
+        else {
+             System.out.println("Nill Kiggers!");
+        }
+//         Press Shift+F10 or click the green arrow button in the gutter to run the code.
         for (int i = 1; i <= 5; i++) {
             System.out.println("Hello and welcome!");
         }

@@ -1,35 +1,39 @@
 #include "vm/vm.h"
+#include "bytecode/interpreter.h"
 
-void VM::testMain(CodeAttribute &mainMethod, ClassFile &classFile) {
-    Frame frame = {.classFile = classFile, .code = mainMethod};
-    m_stack.push(frame);
-    execFrame();
+VM::VM() {
+    m_runtimeArea = RuntimeArea::getInstance();
+    m_stack = new std::stack<Frame>;
 }
 
-void VM::execFrame() {
-    Frame &frame = m_stack.top();
-    CodeAttribute &code = frame.code;
-    uint32_t pc = 0;
-    while (pc < code.codeLength) {
-        uint8_t opCode = code.code[pc];
-        switch (opCode) {
-            case 0xb2: {
-                pc += 2;
-                break;
-            }
-            case 0x12: {
-                pc += 1;
-                auto strInf =  frame.classFile.getConstant<StringInfoConst>(code.code[pc]);
-                auto *str =  new std::string(frame.classFile.getConstant<Utf8InfoConst>(strInf.stringInd).bytes);
-                frame.operandStack.push((void*)str);
-                break;
-            }
-            case 0xb6: {
-                std::string *s = (std::string*)frame.operandStack.top();
-                std::cout << *s << "\n";
-                break;
-            }
-        }
-        pc++;
+void VM::init() {
+
+}
+
+void VM::init(const std::vector<std::string> &classFiles) {
+    //init runtime area -> load all classes -> load methods
+    for (auto &classFile : classFiles) {
+        m_runtimeArea->loadClass(classFile);
     }
+    JClass &mainCl = m_runtimeArea->getMainClass();
+
+    MethodData &method = m_runtimeArea->getMethod(mainCl.getClassName() + ".main:([Ljava/lang/String;)V");
+
+    Frame frame(method.codeAttribute,
+                mainCl.getRuntimeCp(),
+                m_runtimeArea);
+
+    m_stack->push(frame);
 }
+
+void VM::start() {
+    while (!m_stack->empty()) {
+        Frame &frame = m_stack->top();
+        uint32_t pc = frame.pc;
+        auto code = static_cast<BYTECODE>(frame.methodBytecode.code[pc]);
+        Interpreter::execute(code, frame, *m_stack);
+    }
+    exit(0);
+}
+
+

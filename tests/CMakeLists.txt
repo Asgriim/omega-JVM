@@ -8,8 +8,9 @@ file(GLOB_RECURSE HEADER_FILE ${INCLUDE_DIR}/*.h)
 
 foreach(X IN LISTS TESTS)
     string(REGEX MATCH "[^/]*\\.cpp"  OUT ${X})
-    message(${OUT})
-    add_executable(${OUT} ${OUT} ${SRC_FILES} ${HEADER_FILE})
+    string(REPLACE ".cpp" "" EXEC ${OUT})
+    message(${EXEC})
+    add_executable(${EXEC} ${OUT} ${SRC_FILES} ${HEADER_FILE})
 endforeach()
 
 

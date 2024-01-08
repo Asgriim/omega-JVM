@@ -6,13 +6,9 @@
 #include <unordered_map>
 #include "classfile.h"
 #include "classfile_stream.h"
+#include "vm/resolver.h"
 
 
-//todo 30 attrs :(
-static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
-    {"Code",CODE_AT},
-    {"BootstrapMethods",BOOTSTRAP_METHODS_AT}
-};
 
 class AttributeParser {
     public:
@@ -20,12 +16,7 @@ class AttributeParser {
 
 
         static ATTRIBUTE_TYPE resolveAttrType(ClassFile &classFile, uint16_t attributeNameIndex) {
-            auto utf8Const = classFile.getConstant<Utf8InfoConst>(attributeNameIndex);
-            if (attr_map.find(utf8Const.bytes) != attr_map.end()) {
-                return attr_map.find(utf8Const.bytes)->second;
-            } else {
-                return UNKNOWN_AT;
-            }
+            return Resolver::resolveAttrType(classFile.constantPool, attributeNameIndex);
         }
 
         void parseAttributes(ClassFile &classFile, AttributesList &attributes, uint16_t attributeCount);

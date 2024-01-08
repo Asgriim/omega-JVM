@@ -15,6 +15,8 @@ class ClassFileParser {
 
         void parseClassFile(ClassFile &classFile);
 
+
+    private:
         void parseConstPool(ClassFile &classFile);
 
         void parseGenInfo(ClassFile &classFile, GeneralInfo *generalInfo);
@@ -26,7 +28,6 @@ class ClassFileParser {
             constPool[ind].reset(t);
         }
 
-    private:
         ClassFileStream &m_clStream;
         AttributeParser m_attributeParser;
 };

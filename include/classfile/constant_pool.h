@@ -109,7 +109,7 @@ struct InvokeDynamicConst : public DynamicConst {
 };
 
 struct ModuleInfoConst : CpInfo {
-    uint16_t nameInd;
+    uint16_t nameIndex;
 };
 
 struct PackageInfoConst : ModuleInfoConst {

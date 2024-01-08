@@ -181,13 +181,13 @@ ClassFileStream &ClassFileStream::operator>>(InvokeDynamicConst &info) {
 
 ClassFileStream &ClassFileStream::operator>>(ModuleInfoConst &info) {
     info.tag = CONSTANT_POOL_TAG::MODULE_CPT;
-    info.nameInd = readU2();
+    info.nameIndex = readU2();
     return *this;
 }
 
 ClassFileStream &ClassFileStream::operator>>(PackageInfoConst &info) {
     info.tag = CONSTANT_POOL_TAG::PACKAGE_CPT;
-    info.nameInd = readU2();
+    info.nameIndex = readU2();
     return *this;
 }
 

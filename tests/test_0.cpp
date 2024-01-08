@@ -2,7 +2,6 @@
 #include "classfile/classfile.h"
 #include <fstream>
 #include <iostream>
-#include "util/binary_io.h"
 #include "classfile/classfile_stream.h"
 #include "classfile/classfile_parser.h"
 
