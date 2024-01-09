@@ -21,6 +21,8 @@ class RuntimeArea {
 
         void loadClass(const std::string& classPath);
 
+        void loadNative();
+
         JClass& getClass(const std::string& className);
 
         MethodData& getMethod(const std::string& methodName);

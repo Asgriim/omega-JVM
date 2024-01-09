@@ -6,7 +6,7 @@
 #include "classfile/classfile.h"
 #include "runtime/runtime_CP.h"
 #include "unordered_map"
-
+#include <format>
 
 //todo 30 attrs :(
 static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
@@ -58,7 +58,25 @@ class Resolver {
             }
         }
 
+        static std::string& resovleUTF8str(ConstPoolList &constPool,uint16_t ind) {
+            auto &utfStr = getConstant<Utf8InfoConst>(constPool, ind);
+            return utfStr.bytes;
+        }
 
+        static std::string& resolveString(ConstPoolList &constPool,uint16_t ind) {
+            uint16_t strInd = getConstant<StringInfoConst>(constPool, ind).stringInd;
+            return getConstant<Utf8InfoConst>(constPool, strInd).bytes;
+        }
+
+        static std::string resolveMethodFullName(ConstPoolList &constPool, uint16_t ind) {
+            auto &ref = getConstant<MethodRefConst>(constPool, ind);
+            auto &cl = getConstant<ClassInfoConst>(constPool, ref.classIndex);
+            std::string &clName = resolveNameIndex(cl, constPool);
+            auto &nameAndType = getConstant<NameAndTypeConst>(constPool, ref.nameAndTypeIndex);
+            std::string &mName = resolveNameIndex(nameAndType, constPool);
+            std::string descriptor = resovleUTF8str(constPool, nameAndType.descriptorIndex);
+            return std::format("{}.{}:{}", clName, mName, descriptor);
+        }
 
 };
 #endif //OMEGA_JVM_RESOLVER_H

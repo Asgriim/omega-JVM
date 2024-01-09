@@ -12,6 +12,8 @@ void VM::init() {
 
 void VM::init(const std::vector<std::string> &classFiles) {
     //init runtime area -> load all classes -> load methods
+
+    m_runtimeArea->loadNative();
     for (auto &classFile : classFiles) {
         m_runtimeArea->loadClass(classFile);
     }
@@ -24,6 +26,7 @@ void VM::init(const std::vector<std::string> &classFiles) {
                 m_runtimeArea);
 
     m_stack->push(frame);
+
 }
 
 void VM::start() {
@@ -32,6 +35,7 @@ void VM::start() {
         uint32_t pc = frame.pc;
         auto code = static_cast<BYTECODE>(frame.methodBytecode.code[pc]);
         Interpreter::execute(code, frame, *m_stack);
+        frame.pc++;
     }
     exit(0);
 }

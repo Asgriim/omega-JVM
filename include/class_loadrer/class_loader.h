@@ -12,6 +12,7 @@ class BootstrapClassLoader {
         BootstrapClassLoader();
 
     JClass loadClass(const std::string& classPath);
+    void loadNative();
     private:
         Heap *m_heap;
 };

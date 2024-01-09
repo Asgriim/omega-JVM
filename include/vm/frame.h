@@ -9,12 +9,10 @@
 //TODO: REWRITE ALL THIS FRAME LATER
 
 struct Frame {
-    Frame(CodeAttribute &code, RuntimeCP &runtimeCp, RuntimeArea *runtimeArea) : methodBytecode(code), runtimeCp(runtimeCp),
-                                                                                 runtimeArea(runtimeArea) {}
+    Frame(CodeAttribute &code, RuntimeCP &runtimeCp, RuntimeArea *runtimeArea) : methodBytecode(code), runtimeCp(runtimeCp){}
 
     CodeAttribute &methodBytecode;
     RuntimeCP &runtimeCp;
-    RuntimeArea *runtimeArea;
     std::stack<JavaType> operandStack;
     uint32_t pc = 0;
 };

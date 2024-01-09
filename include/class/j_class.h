@@ -20,6 +20,10 @@ class JClass {
             m_className = Resolver::resolveNameIndex(clInfo, classFile.constantPool);
         }
 
+        JClass(bool isNative, ClassFile &classFile, std::string className ) : m_isNative(isNative), m_classFile(classFile), m_runtimeCp(classFile.constantPool) {
+            m_className = className;
+        }
+
         ClassFile &getClassFile() {
                 return m_classFile;
         }
@@ -36,7 +40,8 @@ class JClass {
             return m_className;
         }
 
-private:
+    private:
+            bool m_isNative = false;
             ClassFile &m_classFile;
             std::string m_className;
             RuntimeCP m_runtimeCp;

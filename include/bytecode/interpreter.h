@@ -10,6 +10,7 @@ typedef std::unordered_map<BYTECODE, std::function<void(Frame &, std::stack<Fram
 class Interpreter {
     public:
         static void execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack);
+        static void execNative(std::string &methodFullName, Frame &frame, std::stack<Frame> &stack);
     private:
         static ByteOpMap m_byteOpMap;
     };

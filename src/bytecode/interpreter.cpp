@@ -1,10 +1,12 @@
+
 #include "bytecode/interpreter.h"
 #include "iostream"
-
+#include "bytecode/native.h"
+#include <format>
 
 //pain
 ByteOpMap Interpreter::m_byteOpMap = {
-        {BYTECODE::GET_STATIC, jbcf::getstatic},
+        {BYTECODE::GETSTATIC, jbcf::getstatic},
         {BYTECODE::LDC, jbcf::ldc},
         {BYTECODE::INVOKE_VIRTUAL, jbcf::invokevirtual},
         {BYTECODE::RETURN, jbcf::jreturn}
@@ -19,4 +21,12 @@ void Interpreter::execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack)
     }
 
     it->second(frame, stack);
+}
+
+void Interpreter::execNative(std::string &methodFullName, Frame &frame, std::stack<Frame> &stack) {
+    if (nativeMap.contains(methodFullName)) {
+        nativeMap.find(methodFullName)->second(frame, stack);
+    }
+
+    std::cerr << std::format("METHOD NOT FOUND: {}\n", methodFullName);
 }

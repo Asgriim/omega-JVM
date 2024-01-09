@@ -5,6 +5,7 @@
 #include "format"
 #include "vm/resolver.h"
 
+#include "bytecode/native.h"
 
 BootstrapClassLoader::BootstrapClassLoader() {
     m_heap = Heap::getInstance();
@@ -74,6 +75,37 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
 
 
     return jClass;
+}
+
+//todo this is really bad delete later
+void BootstrapClassLoader::loadNative() {
+    ClassFile emptyCl;
+    for (auto &it : nativeClasFields) {
+
+        std::string clName = it.first;
+        JClass jClass(true, emptyCl, clName);
+        for (auto &fieldName : it.second) {
+            std::string fieldDescriptor = std::format("{}.{}" , clName, fieldName);
+            //todo placeholder
+            JavaType type = JavaType::createByType(JAVA_DATA_TYPE::CHAR_JDT);
+            auto &staticVars = jClass.getStaticVars();
+            staticVars[fieldDescriptor] = type;
+        }
+
+        m_heap->getJClassTable().insert({clName, jClass});
+    }
+
+    CodeAttribute emptyCode;
+    for (auto &it : nativeClasMethods) {
+        std::string clName = it.first;
+        for (auto &methodName : it.second) {
+            std::string methodFullName = std::format("{}.{}", clName, methodName);
+
+            MethodData methodData = {.codeAttribute = emptyCode, .isNative = true};
+            m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
+        }
+
+    }
 }
 
 

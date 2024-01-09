@@ -12,6 +12,7 @@
 
 struct MethodData {
     CodeAttribute &codeAttribute;
+    bool isNative = false;
 };
 
 struct MethodArea {

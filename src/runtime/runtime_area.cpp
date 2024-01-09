@@ -41,6 +41,10 @@ MethodData &RuntimeArea::getMethod(const std::string &methodName) {
     abort();
 }
 
+void RuntimeArea::loadNative() {
+    m_bootstrapClassLoader.loadNative();
+}
+
 
 
 

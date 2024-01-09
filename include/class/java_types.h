@@ -16,10 +16,10 @@ enum JAVA_DATA_TYPE : char {
     REF_JDT    = 'L',
     REF_ARR    = '[',
     LONG_JDT   = 'J',
-    DOUBLE_JDT = 'D'
+    DOUBLE_JDT = 'D',
+    STRING_CONST
 };
 
-//todo reference implement
 //std::variant not usable here
 union DataContent {
     bool jBool;
@@ -28,10 +28,12 @@ union DataContent {
     int16_t jShort;
     int32_t jInt;
     float jFloat;
+//todo reference implement
     RefInfoConst *refInfo;
     uint32_t jRetAddr;
     int64_t jLong;
     double jDouble;
+    const std::string *string;
 };
 
 struct JavaType {
