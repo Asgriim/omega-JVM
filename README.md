@@ -7,6 +7,8 @@
 
 ``cmake --build target --target omega-jvm``
 
+Требуется библиотека ```libzip``` для сборки.
+
 После этого можно запустить через ./target/omega-jvm.
 
 ## Проверка 
