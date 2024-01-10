@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     } else {
         std::vector<std::string> classes;
         for (int i = 1; i < argc; ++i) {
-            std::cout << std::format("{} \n",argv[i]);
+//            std::cout << std::format("{} \n",argv[i]);
             classes.emplace_back(argv[i]);
         }
         vm->init(classes);
