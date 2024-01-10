@@ -14,14 +14,29 @@ BootstrapClassLoader::BootstrapClassLoader() {
 
 JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
     ClassFile *classFile = new ClassFile;
-    std::ifstream file(classPath);
-    if (!file.is_open()) {
-        std::cerr << std::format("Class not found: {}\n", classPath) ;
-        exit(1);
+    if (m_jarFile != NULL) {
+        struct zip_stat stat{};
+        zip_stat(m_jarFile, classPath.data(), ZIP_FL_UNCHANGED, &stat);
+        auto *file = zip_fopen(m_jarFile, classPath.data(),ZIP_FL_UNCHANGED);
+        if (file == NULL) {
+            std::cerr << std::format("Class not found: {}\n", classPath) ;
+            exit(1);
+        }
+        ClassFileStream clStream(file,stat.size);
+        ClassFileParser classFileParser(clStream);
+        classFileParser.parseClassFile(*classFile);
+    } else {
+        std::ifstream file(classPath);
+        if (!file.is_open()) {
+            std::cerr << std::format("Class not found: {}\n", classPath) ;
+            exit(1);
+        }
+        ClassFileStream clStream(file);
+        ClassFileParser classFileParser(clStream);
+        classFileParser.parseClassFile(*classFile);
     }
-    ClassFileStream clStream(file);
-    ClassFileParser classFileParser(clStream);
-    classFileParser.parseClassFile(*classFile);
+
+
 
 
     JClass jClass(*classFile);
@@ -106,6 +121,10 @@ void BootstrapClassLoader::loadNative() {
         }
 
     }
+}
+
+void BootstrapClassLoader::setJarFile(zip *jarFile) {
+    m_jarFile = jarFile;
 }
 
 

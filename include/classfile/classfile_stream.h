@@ -8,11 +8,15 @@
 #include <memory>
 #include <cstdint>
 #include "classfile.h"
+#include "zip.h"
 
 class ClassFileStream {
 
     public:
+
         ClassFileStream(std::istream &is, int64_t buf_size = 2048);
+
+        ClassFileStream(zip_file *jarFile, uint64_t fileSize, int64_t buf_size = 2048);
 
         virtual ~ClassFileStream() = default;
 
@@ -86,11 +90,13 @@ class ClassFileStream {
 
         ClassFileStream &operator>>(BootstrapMethodsAttribute &attribute);
 
-    ClassFileStream &operator>>(UnknownAttr &attribute);
+        ClassFileStream &operator>>(UnknownAttr &attribute);
+
     private:
         void allocBuf();
         void getFileLen();
 
+        zip_file *m_jarFile = NULL;
         std::istream &m_is;
         int64_t m_curPos = 0;
         int64_t m_endPos = 0;

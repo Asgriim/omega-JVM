@@ -7,7 +7,7 @@
 #include <stack>
 #include "frame.h"
 #include "runtime/runtime_area.h"
-
+#include "zip.h"
 // TODO: this is test implement, rewrite later
 class VM {
     public:
@@ -18,7 +18,8 @@ class VM {
         //if get classFiles from CLI
         void init(const std::vector<std::string> &classFiles);
         //todo implement jar files
-        void init();
+        void init(zip *jarFile);
+        std::string getMainClassFromManifest(zip *jarFile);
     private:
         RuntimeArea *m_runtimeArea;
         //todo rewrite on smart ptr

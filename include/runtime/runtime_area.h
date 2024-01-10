@@ -5,7 +5,7 @@
 
 
 #include "class_loadrer/class_loader.h"
-
+#include "zip.h"
 class RuntimeArea {
     public:
         RuntimeArea(RuntimeArea &other) = delete;
@@ -29,11 +29,23 @@ class RuntimeArea {
 
         JClass& getMainClass();
 
-    private:
-        RuntimeArea();
+        zip *getJarFile() const {
+            return m_jarFile;
+        }
 
-        static RuntimeArea *m_instance;
-        Heap *m_heap;
-        BootstrapClassLoader m_bootstrapClassLoader;
+        void setJarFile(zip *JarFile) {
+            m_jarFile = JarFile;
+            m_jar = true;
+        }
+
+        bool isJar() const;
+
+private:
+            RuntimeArea();
+            zip *m_jarFile;
+            bool m_jar;
+            static RuntimeArea *m_instance;
+            Heap *m_heap;
+            BootstrapClassLoader m_bootstrapClassLoader;
 };
 #endif //OMEGA_JVM_RUNTIME_AREA_H

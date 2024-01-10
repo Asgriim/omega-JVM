@@ -11,7 +11,10 @@ RuntimeArea::RuntimeArea() {
 
 
 void RuntimeArea::loadClass(const std::string &classPath) {
-    m_bootstrapClassLoader.loadClass(classPath);
+    if (m_jar) {
+        m_bootstrapClassLoader.setJarFile(m_jarFile);
+    }
+    m_bootstrapClassLoader.loadClass(classPath + ".class");
 }
 
 JClass& RuntimeArea::getMainClass() {
@@ -30,10 +33,18 @@ JClass& RuntimeArea::getMainClass() {
 }
 
 MethodData &RuntimeArea::getMethod(const std::string &methodName) {
+
+    if (m_jar && !m_heap->getMethodArea().methodMap.contains(methodName)) {
+        auto clName = methodName.substr(0, methodName.find("."));
+        loadClass(clName);
+    }
+
     auto it = m_heap->getMethodArea().methodMap.find(methodName);
+
     if (it != m_heap->getMethodArea().methodMap.end()) {
         return it->second;
     }
+
 
     std::cerr << std::format("METHOD NOT FOUND: {} \n", methodName);
     exit(-1);
@@ -43,6 +54,28 @@ MethodData &RuntimeArea::getMethod(const std::string &methodName) {
 
 void RuntimeArea::loadNative() {
     m_bootstrapClassLoader.loadNative();
+}
+
+bool RuntimeArea::isJar() const {
+    return m_jar;
+}
+
+JClass &RuntimeArea::getClass(const std::string &className) {
+
+    if (m_jar && !m_heap->getJClassTable().contains(className)) {
+        loadClass(className);
+    }
+
+    auto it = m_heap->getJClassTable().find(className);
+
+    if (it != m_heap->getJClassTable().end()) {
+        return it->second;
+    }
+
+    std::cerr << std::format("CLASS NOT FOUND: {} \n", className);
+    exit(-1);
+    //can't get here
+    abort();
 }
 
 

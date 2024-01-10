@@ -3,6 +3,7 @@
 namespace native {
     void println_str(Frame &frame, std::stack<Frame> &stack) {
         JavaType javaType = frame.operandStack.top();
+
         switch (javaType.javaDataType) {
 
             case BOOL_JDT: {
@@ -46,5 +47,7 @@ namespace native {
                 break;
             }
         }
+        frame.operandStack.pop();
+        frame.operandStack.pop();
     }
 }

@@ -5,12 +5,28 @@ ClassFileStream::ClassFileStream(std::istream &is, int64_t buf_size) : m_is(is) 
     getFileLen();
 }
 
+ClassFileStream::ClassFileStream(zip_file *jarFile, uint64_t fileSize, int64_t buf_size) : m_is(std::cin) {
+    m_jarFile = jarFile;
+    m_bufSize = buf_size;
+    m_endPos = fileSize - 1;
+}
+
+
 void ClassFileStream::allocBuf() {
-    if (m_endPos - m_is.tellg() < m_bufSize) {
-        m_bufSize = m_endPos - m_curPos;
+    if (m_jarFile != NULL) {
+        if (m_endPos - zip_ftell(m_jarFile) < m_bufSize) {
+            m_bufSize = m_endPos - m_curPos;
+        }
+        m_buf = std::make_unique<char[]>(m_bufSize);
+        zip_fread(m_jarFile, m_buf.get(), m_bufSize);
+    } else {
+        if (m_endPos - m_is.tellg() < m_bufSize) {
+            m_bufSize = m_endPos - m_curPos;
+        }
+        m_buf = std::make_unique<char[]>(m_bufSize);
+        m_is.read(m_buf.get(), m_bufSize);
     }
-    m_buf = std::make_unique<char[]>(m_bufSize);
-    m_is.read(m_buf.get(), m_bufSize);
+
     m_curPos = 0;
 }
 
@@ -253,6 +269,8 @@ ClassFileStream &ClassFileStream::operator>>(CodeAttribute &attribute) {
 
     return *this;
 }
+
+
 
 
 
