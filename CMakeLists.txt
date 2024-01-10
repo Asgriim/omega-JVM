@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.25)
 
-SET(VCPKG_PATH ~/vcpkg/vcpkg)
+#SET(VCPKG_PATH ~/vcpkg/vcpkg)
 
-IF (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    message(not found)
-    SET(CMAKE_TOOLCHAIN_FILE ${VCPKG_PATH}/scripts/buildsystems/vcpkg.cmake)
-ENDIF ()
+#IF (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+#    message(not found)
+#    SET(CMAKE_TOOLCHAIN_FILE ${VCPKG_PATH}/scripts/buildsystems/vcpkg.cmake)
+#ENDIF ()
 
 
 project(omega_jvm)
