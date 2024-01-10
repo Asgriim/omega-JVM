@@ -104,6 +104,7 @@ void ClassFileParser::parseConstPool(ClassFile &classFile) {
                 break;
         }
     }
+
 }
 
 void ClassFileParser::parseGenInfo(ClassFile &classFile, GeneralInfo *generalInfo) {

@@ -12,7 +12,7 @@ enum BYTECODE : uint8_t {
     LDC            = 0x12,
     INVOKE_VIRTUAL = 0xB6,
     RETURN         = 0xB1,
-    ACONST_NULL    = 0x1,
+    ACONST_NULL    = 0x01,
     ALOAD          = 0x19,
     ALOAD_N        = 0x2A,
     ANEW_ARRAY     = 0xBD,
@@ -47,5 +47,17 @@ enum BYTECODE : uint8_t {
     FADD           = 0x62,
     GETSTATIC      = 0xb2,
     GOTO           = 0xa7,
+    ICONST_M1      = 0x02,
+    ICONST_0       = 0x03,
+    ICONST_1       = 0x04,
+    ICONST_2       = 0x05,
+    ICONST_3       = 0x06,
+    ICONST_4       = 0x07,
+    ICONST_5       = 0x08,
+    PUTSTATIC      = 0xb3,
+    INVOKESTATIC   = 0xb8,
+    IADD           = 0x60,
+    IRETURN        = 0xac,
+    POP            = 0x57
 };
 #endif //OMEGA_JVM_BYTECODES_H

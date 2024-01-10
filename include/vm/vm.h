@@ -11,16 +11,30 @@
 // TODO: this is test implement, rewrite later
 class VM {
     public:
-        VM();
+
 
         void start();
+        void execFrame(Frame &frame);
+
+        static VM* getInstatance(){
+            if (m_instance == nullptr) {
+                m_instance = new VM();
+            }
+            return m_instance;
+        };
 
         //if get classFiles from CLI
         void init(const std::vector<std::string> &classFiles);
-        //todo implement jar files
+
         void init(zip *jarFile);
+
         std::string getMainClassFromManifest(zip *jarFile);
-    private:
+
+        std::stack<Frame> *getStack() const;
+
+private:
+        VM();
+        static VM *m_instance;
         RuntimeArea *m_runtimeArea;
         //todo rewrite on smart ptr
         std::stack<Frame> *m_stack;

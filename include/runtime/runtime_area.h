@@ -29,6 +29,12 @@ class RuntimeArea {
 
         JClass& getMainClass();
 
+        JavaType& getField(const std::string& fieldName);
+
+        bool isClInitExist(const std::string &clName) {
+            return m_heap->getMethodArea().methodMap.contains(clName + ".<clinit>:()V");
+        };
+
         zip *getJarFile() const {
             return m_jarFile;
         }

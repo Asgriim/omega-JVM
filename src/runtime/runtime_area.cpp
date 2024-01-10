@@ -78,6 +78,22 @@ JClass &RuntimeArea::getClass(const std::string &className) {
     abort();
 }
 
+JavaType &RuntimeArea::getField(const std::string &fieldName) {
+    if (m_jar && !m_heap->getFieldTable().contains(fieldName)) {
+        loadClass(fieldName.substr(0,fieldName.find('.')));
+    }
+
+    auto it = m_heap->getFieldTable().find(fieldName);
+    if (it != m_heap->getFieldTable().end()) {
+        return it->second;
+    }
+
+    std::cerr << std::format("field NOT FOUND: {} \n", fieldName);
+    exit(-1);
+}
+
+
+
 
 
 

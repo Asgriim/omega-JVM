@@ -11,6 +11,7 @@ class Interpreter {
     public:
         static void execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack);
         static void execNative(std::string &methodFullName, Frame &frame, std::stack<Frame> &stack);
+        static void execClInit(JClass &jClass);
     private:
         static ByteOpMap m_byteOpMap;
     };

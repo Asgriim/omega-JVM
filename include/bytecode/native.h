@@ -12,7 +12,10 @@
 //tdod add all printl and print
 static std::unordered_map<std::string, std::vector<std::string>> nativeClasMethods = {
         {"java/io/PrintStream",
-         {"println:(Ljava/lang/String;)V"}
+                 {
+                        "println:(Ljava/lang/String;)V",
+                        "println:(I)V"
+                 }
         }
 };
 
@@ -30,7 +33,8 @@ namespace native {
 
 
 static std::unordered_map<std::string, std::function<void(Frame &, std::stack<Frame> &)>> nativeMap = {
-        {"java/io/PrintStream.println:(Ljava/lang/String;)V", native::println_str}
+        {"java/io/PrintStream.println:(Ljava/lang/String;)V", native::println_str},
+        {"java/io/PrintStream.println:(I)V", native::println_str}
 };
 
 #endif //OMEGA_JVM_NATIVE_H

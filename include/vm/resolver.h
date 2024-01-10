@@ -7,7 +7,7 @@
 #include "runtime/runtime_CP.h"
 #include "unordered_map"
 #include <format>
-
+#include "vector"
 //todo 30 attrs :(
 static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
         {"Code",CODE_AT},
@@ -76,6 +76,22 @@ class Resolver {
             std::string &mName = resolveNameIndex(nameAndType, constPool);
             std::string descriptor = resovleUTF8str(constPool, nameAndType.descriptorIndex);
             return std::format("{}.{}:{}", clName, mName, descriptor);
+        }
+
+        static std::string resolveNameAndType(ConstPoolList &constPool, uint16_t ind) {
+            auto &nameAndType = getConstant<NameAndTypeConst>(constPool, ind);
+            std::string &name = resolveNameIndex(nameAndType,constPool);
+            std::string &descriptor = resovleUTF8str(constPool, nameAndType.descriptorIndex);
+            return std::format("{}:{}",name, descriptor);
+        }
+
+        static std::string resoveFieldFullName(ConstPoolList &constPool, uint16_t ind) {
+            auto &fieldRef = getConstant<FieldRefConst>(constPool, ind);
+            auto &cl = getConstant<ClassInfoConst>(constPool, fieldRef.classIndex);
+            std::string &clName = resolveNameIndex(cl, constPool);
+            auto nameAndType = resolveNameAndType(constPool,fieldRef.nameAndTypeIndex);
+            std::erase(nameAndType,';');
+            return std::format("{}.{}", clName, nameAndType);
         }
 
 };

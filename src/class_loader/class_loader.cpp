@@ -4,7 +4,7 @@
 #include "fstream"
 #include "format"
 #include "vm/resolver.h"
-
+#include "bytecode/interpreter.h"
 #include "bytecode/native.h"
 
 BootstrapClassLoader::BootstrapClassLoader() {
@@ -40,7 +40,7 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
 
 
     JClass jClass(*classFile);
-    auto &staticVars = jClass.getStaticVars();
+    auto &staticVars = m_heap->getFieldTable();
 
     //todo write resolver for symbolic links
 //    auto &clInfo = classFile->getConstant<ClassInfoConst>(classFile->thisClass);
@@ -62,7 +62,7 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
             //TODO handle refs and arrays
 
 
-            std::cout << fieldDescriptor << "\n";
+//            std::cout << fieldDescriptor << "\n";
         }
     }
 
@@ -82,12 +82,12 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
                 m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
             }
         }
-        std::cout << "method name " << methodFullName <<"\n";
+//        std::cout << "method name " << methodFullName <<"\n";
     }
 
     m_heap->getJClassTable().insert({jClassName, jClass});
 
-
+    Interpreter::execClInit(jClass);
 
     return jClass;
 }
@@ -103,7 +103,7 @@ void BootstrapClassLoader::loadNative() {
             std::string fieldDescriptor = std::format("{}.{}" , clName, fieldName);
             //todo placeholder
             JavaType type = JavaType::createByType(JAVA_DATA_TYPE::CHAR_JDT);
-            auto &staticVars = jClass.getStaticVars();
+            auto &staticVars = m_heap->getFieldTable();
             staticVars[fieldDescriptor] = type;
         }
 

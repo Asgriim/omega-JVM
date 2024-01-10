@@ -3,20 +3,35 @@
 #include "iostream"
 #include "bytecode/native.h"
 #include <format>
+#include "vm/vm.h"
 
 //pain
 ByteOpMap Interpreter::m_byteOpMap = {
         {BYTECODE::GETSTATIC, jbcf::getstatic},
         {BYTECODE::LDC, jbcf::ldc},
         {BYTECODE::INVOKE_VIRTUAL, jbcf::invokevirtual},
-        {BYTECODE::RETURN, jbcf::jreturn}
+        {BYTECODE::RETURN, jbcf::jreturn},
+        {BYTECODE::ICONST_M1, jbcf::iconst_m1},
+        {BYTECODE::ICONST_0, jbcf::iconst_0},
+        {BYTECODE::ICONST_1, jbcf::iconst_1},
+        {BYTECODE::ICONST_2, jbcf::iconst_2},
+        {BYTECODE::ICONST_3, jbcf::iconst_3},
+        {BYTECODE::ICONST_4, jbcf::iconst_4},
+        {BYTECODE::ICONST_5, jbcf::iconst_5},
+        {BYTECODE::PUTSTATIC, jbcf::putstatic},
+        {BYTECODE::BIPUSH, jbcf::bipush},
+        {BYTECODE::INVOKESTATIC, jbcf::invokestatic},
+        {BYTECODE::IADD, jbcf::iadd},
+        {BYTECODE::IRETURN, jbcf::ireturn},
+        {BYTECODE::POP, jbcf::pop},
 };
 
 void Interpreter::execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack) {
     auto it = m_byteOpMap.find(code);
 
     if (it == m_byteOpMap.end()) {
-        std::cerr << "ILLEGAL INSTRUCTION";
+        int a = code;
+        std::cerr << "ILLEGAL INSTRUCTION 0x" << std::hex << a;
         exit(-1);
     }
 
@@ -29,4 +44,15 @@ void Interpreter::execNative(std::string &methodFullName, Frame &frame, std::sta
     }
 
     std::cerr << std::format("METHOD NOT FOUND: {}\n", methodFullName);
+}
+
+void Interpreter::execClInit(JClass &jClass) {
+    RuntimeArea *runtimeArea = RuntimeArea::getInstance();
+    if (!runtimeArea->isClInitExist(jClass.getClassName())) {
+        return;
+    }
+    MethodData methodData = runtimeArea->getMethod(jClass.getClassName() + ".<clinit>:()V");
+    Frame frame(methodData.codeAttribute, jClass.getRuntimeCp());
+    auto *vm = VM::getInstatance();
+    vm->execFrame(frame);
 }

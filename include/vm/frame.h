@@ -9,7 +9,7 @@
 //TODO: REWRITE ALL THIS FRAME LATER
 
 struct Frame {
-    Frame(CodeAttribute &code, RuntimeCP &runtimeCp, RuntimeArea *runtimeArea) : methodBytecode(code), runtimeCp(runtimeCp){}
+    Frame(CodeAttribute &code, RuntimeCP &runtimeCp) : methodBytecode(code), runtimeCp(runtimeCp){}
 
     CodeAttribute &methodBytecode;
     RuntimeCP &runtimeCp;

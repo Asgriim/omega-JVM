@@ -9,10 +9,11 @@ namespace jbcf {
         uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
         frame.pc++;
         index |= frame.methodBytecode.code[frame.pc];
-        auto &fieldRef = Resolver::getConstant<FieldRefConst>(frame.runtimeCp.getConstPool(), index);
-        JavaType javaType;
-        javaType.javaDataType = JAVA_DATA_TYPE::REF_JDT;
-        javaType.data.refInfo = &fieldRef;
+        std::string fieldName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
+        JavaType &javaType = RuntimeArea::getInstance()->getField(fieldName);
+//        JavaType javaType;
+//        javaType.javaDataType = JAVA_DATA_TYPE::REF_JDT;
+//        javaType.data.refInfo = &fieldRef;
         frame.operandStack.push(javaType);
     }
 
@@ -118,17 +119,150 @@ namespace jbcf {
                 index
                 );
 
-        std::cout << methodFullName << "\n";
+//        std::cout << methodFullName << "\n";
         RuntimeArea *runtimeArea = RuntimeArea::getInstance();
         MethodData &methodData = runtimeArea->getMethod(methodFullName);
 
         if (methodData.isNative) {
             nativeMap.find(methodFullName)->second(frame, stack);
+            return;
         }
     }
 
     void jreturn(Frame &frame, std::stack<Frame> &stack){
-        std::cout << "return\n";
-        stack.pop();
+        if (!stack.empty()) {
+            stack.pop();
+        }
     }
+
+    void iconst_m1(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = -1;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_0(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 0;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_1(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 1;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_2(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 2;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_3(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 3;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_4(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 4;
+        frame.operandStack.push(javaType);
+    }
+
+    void iconst_5(Frame &frame, std::stack<Frame> &stack) {
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = 5;
+        frame.operandStack.push(javaType);
+    }
+
+    void putstatic(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        std::string fieldFullName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
+        RuntimeArea *runtimeArea = RuntimeArea::getInstance();
+        JavaType &javaType = runtimeArea->getField(fieldFullName);
+        switch (javaType.javaDataType) {
+
+            case BOOL_JDT:
+                break;
+            case BYTE_JDT:
+                break;
+            case CHAR_JDT:
+                break;
+            case SHORT_JDT:
+                break;
+            case INT_JDT: {
+                javaType.data.jInt = frame.operandStack.top().data.jInt;
+                break;
+            }
+
+            case FLOAT_JDT:
+                break;
+            case REF_JDT:
+                break;
+            case REF_ARR:
+                break;
+            case LONG_JDT:
+                break;
+            case DOUBLE_JDT:
+                break;
+            case STRING_CONST:
+                break;
+        }
+        frame.operandStack.pop();
+    }
+
+    void bipush(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint8_t byte = frame.methodBytecode.code[frame.pc];
+        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaType.data.jInt = byte;
+    }
+
+    void invokestatic(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        std::string methodName = Resolver::resolveMethodFullName(frame.runtimeCp.getConstPool(),index);
+        RuntimeArea *runtimeArea = RuntimeArea::getInstance();
+        MethodData &methodData = runtimeArea->getMethod(methodName);
+
+        if (methodData.isNative) {
+            nativeMap.find(methodName)->second(frame, stack);
+            return;
+        }
+        JClass &jclass = runtimeArea->getClass(methodName.substr(0,methodName.find('.')));
+        Frame newFrame(methodData.codeAttribute, jclass.getRuntimeCp());
+        newFrame.operandStack = frame.operandStack;
+        stack.push(newFrame);
+    }
+
+    void iadd(Frame &frame, std::stack<Frame> &stack) {
+        JavaType &op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaType &op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaType resType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        resType.data.jInt = op1.data.jInt + op2.data.jInt;
+        frame.operandStack.push(resType);
+    }
+
+    void ireturn(Frame &frame, std::stack<Frame> &stack) {
+        if (!stack.empty()) {
+            stack.pop();
+            auto &i = frame.operandStack.top();
+            frame.operandStack.pop();
+            stack.top().operandStack.push(i);
+        }
+    }
+
+    void pop(Frame &frame, std::stack<Frame> &stack) {
+        frame.operandStack.pop();
+    }
+
 }

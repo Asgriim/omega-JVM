@@ -28,9 +28,9 @@ class JClass {
                 return m_classFile;
         }
 
-        VariablesTable & getStaticVars() {
-            return m_staticVars;
-        }
+//        VariablesTable & getStaticVars() {
+//            return m_staticVars;
+//        }
 
         RuntimeCP &getRuntimeCp() {
             return m_runtimeCp;

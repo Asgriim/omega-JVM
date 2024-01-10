@@ -135,13 +135,13 @@ ClassFileStream &ClassFileStream::operator>>(StringInfoConst &info) {
 
 ClassFileStream &ClassFileStream::operator>>(IntegerConst &info) {
     info.tag = CONSTANT_POOL_TAG::INTEGER_CPT;
-    info.bytes = readU2();
+    info.bytes = readU4();
     return *this;
 }
 
 ClassFileStream &ClassFileStream::operator>>(FloatConst &info) {
     info.tag = CONSTANT_POOL_TAG::FLOAT_CPT;
-    info.bytes = readU2();
+    info.bytes = readU4();
     return *this;
 }
 

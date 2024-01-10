@@ -1,37 +1,40 @@
 #include <iostream>
-#include "istream"
 #include "ostream"
+#include "vm/vm.h"
 
 #include <zip.h>
 #include <algorithm>
+#include "cstring"
 
-void test(std::istream & istream,std::ostream & ostream) {
-   int err = 0;
-   auto *zip = zip_open("/home/asgrim/CLionProjects/omega-JVM/java_files/testing-1.0-SNAPSHOT-jar-with-dependencies.jar", ZIP_RDONLY, &err);
-   auto *file = zip_fopen(zip, "META-INF/MANIFEST.MF",ZIP_FL_UNCHANGED);
-   struct zip_stat stat{};
-   zip_stat(zip, "META-INF/MANIFEST.MF", ZIP_FL_UNCHANGED, &stat);
-   char buf[160];
-//    std::cout << zip_file_is_seekable(file) << "\n";
-//    zip_fseek(file, 0, SEEK_END);
-
-
-   zip_fread(file, buf, 159);
-   std::cout << zip_ftell(file) << "\n";
-   std::string s(buf);
-//   s.replace(s.begin(),s.end(),"\r","");
-    std::erase(s,'\r');
-//    std::replace( s.begin(), s.end(), '\r', ' ');
-//    std::cout << s;
-    auto s1 = s.substr(s.find("Main"),s.length());
-    auto s2 = s1.substr(0, s1.find('\n'));
-    auto clName = s2.substr(s2.find(':') + 1, s2.length());
-    std::erase(clName, ' ');
-    std::replace(clName.begin(),clName.end(), '.','/');
-    std::cout << clName << "\n";
-}
 
 int main(int argc, char *argv[]) {
-    test(std::cin,std::cout);
+    VM *vm = VM::getInstatance();
+    if (argc < 2) {
+        std::cerr << "No arguments passed\n";
+        exit(-1);
+    }
+    if (std::strcmp(argv[1], "-jar") == 0) {
+        if (argc > 2) {
+            int err = 0;
+            auto *zip = zip_open(argv[2], ZIP_RDONLY, &err);
+            if (zip == NULL) {
+                std::cerr << "JAR not found\n";
+                exit(-1);
+            }
+            vm->init(zip);
+        } else {
+            std::cerr << "No jar passed\n";
+            exit(-1);
+        }
+
+    } else {
+        std::vector<std::string> classes;
+        for (int i = 1; i < argc; ++i) {
+            std::cout << std::format("{} \n",argv[i]);
+            classes.emplace_back(argv[i]);
+        }
+        vm->init(classes);
+    }
+    vm->start();
     return 0;
 }

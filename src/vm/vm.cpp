@@ -1,6 +1,8 @@
 #include "vm/vm.h"
 #include "bytecode/interpreter.h"
 
+VM * VM::m_instance = nullptr;
+
 VM::VM() {
     m_runtimeArea = RuntimeArea::getInstance();
     m_stack = new std::stack<Frame>;
@@ -18,8 +20,7 @@ void VM::init(zip *jarFile) {
     JClass &mainCl = m_runtimeArea->getClass(mainClName);
 
     Frame frame(method.codeAttribute,
-                mainCl.getRuntimeCp(),
-                m_runtimeArea);
+                mainCl.getRuntimeCp());
 
     m_stack->push(frame);
 
@@ -37,8 +38,7 @@ void VM::init(const std::vector<std::string> &classFiles) {
     MethodData &method = m_runtimeArea->getMethod(mainCl.getClassName() + ".main:([Ljava/lang/String;)V");
 
     Frame frame(method.codeAttribute,
-                mainCl.getRuntimeCp(),
-                m_runtimeArea);
+                mainCl.getRuntimeCp());
 
     m_stack->push(frame);
 
@@ -73,6 +73,19 @@ std::string VM::getMainClassFromManifest(zip *jarFile) {
     std::erase(clName, ' ');
     std::replace(clName.begin(), clName.end(),'.','/');
     return clName;
+}
+
+std::stack<Frame> *VM::getStack() const {
+    return m_stack;
+}
+
+void VM::execFrame(Frame &frame) {
+    while (frame.pc < frame.methodBytecode.codeLength) {
+        uint32_t pc = frame.pc;
+        auto code = static_cast<BYTECODE>(frame.methodBytecode.code[pc]);
+        Interpreter::execute(code, frame, *m_stack);
+        frame.pc++;
+    }
 }
 
 
