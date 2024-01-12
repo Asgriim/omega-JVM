@@ -41,7 +41,7 @@ class Heap {
             return *m_JClassTable;
         }
 
-        std::unordered_map<std::string, JavaType>& getFieldTable() {
+        std::unordered_map<std::string, JavaValue>& getFieldTable() {
             return *m_FieldTable;
         }
 
@@ -49,12 +49,12 @@ private:
         Heap() {
             m_methodArea = new MethodArea();
             m_JClassTable = new std::unordered_map<std::string, JClass>;
-            m_FieldTable =  new std::unordered_map<std::string, JavaType>;
+            m_FieldTable =  new std::unordered_map<std::string, JavaValue>;
         }
 
         static Heap *m_instance;
         MethodArea *m_methodArea;
         std::unordered_map<std::string, JClass> *m_JClassTable;
-        std::unordered_map<std::string, JavaType> *m_FieldTable;
+        std::unordered_map<std::string, JavaValue> *m_FieldTable;
 };
 #endif //OMEGA_JVM_HEAP_H

@@ -10,8 +10,8 @@ namespace jbcf {
         frame.pc++;
         index |= frame.methodBytecode.code[frame.pc];
         std::string fieldName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
-        JavaType &javaType = RuntimeArea::getInstance()->getField(fieldName);
-//        JavaType javaType;
+        JavaValue &javaType = RuntimeArea::getInstance()->getField(fieldName);
+//        JavaValue javaType;
 //        javaType.javaDataType = JAVA_DATA_TYPE::REF_JDT;
 //        javaType.data.refInfo = &fieldRef;
         frame.operandStack.push(javaType);
@@ -21,7 +21,7 @@ namespace jbcf {
         frame.pc++;
         uint8_t index = frame.methodBytecode.code[frame.pc] ;
         auto &item = frame.runtimeCp.getConstant<CpInfo>(index);
-        JavaType javaType;
+        JavaValue javaType;
         switch (item.tag) {
 
             case CONSTANT_POOL_TAG::UTF8_CPT: {
@@ -136,43 +136,43 @@ namespace jbcf {
     }
 
     void iconst_m1(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = -1;
         frame.operandStack.push(javaType);
     }
 
     void iconst_0(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 0;
         frame.operandStack.push(javaType);
     }
 
     void iconst_1(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 1;
         frame.operandStack.push(javaType);
     }
 
     void iconst_2(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 2;
         frame.operandStack.push(javaType);
     }
 
     void iconst_3(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 3;
         frame.operandStack.push(javaType);
     }
 
     void iconst_4(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 4;
         frame.operandStack.push(javaType);
     }
 
     void iconst_5(Frame &frame, std::stack<Frame> &stack) {
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = 5;
         frame.operandStack.push(javaType);
     }
@@ -184,7 +184,7 @@ namespace jbcf {
         index |= frame.methodBytecode.code[frame.pc];
         std::string fieldFullName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
         RuntimeArea *runtimeArea = RuntimeArea::getInstance();
-        JavaType &javaType = runtimeArea->getField(fieldFullName);
+        JavaValue &javaType = runtimeArea->getField(fieldFullName);
         switch (javaType.javaDataType) {
 
             case BOOL_JDT:
@@ -219,8 +219,9 @@ namespace jbcf {
     void bipush(Frame &frame, std::stack<Frame> &stack) {
         frame.pc++;
         uint8_t byte = frame.methodBytecode.code[frame.pc];
-        JavaType javaType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         javaType.data.jInt = byte;
+        frame.operandStack.push(javaType);
     }
 
     void invokestatic(Frame &frame, std::stack<Frame> &stack) {
@@ -243,11 +244,11 @@ namespace jbcf {
     }
 
     void iadd(Frame &frame, std::stack<Frame> &stack) {
-        JavaType &op1 = frame.operandStack.top();
+        JavaValue &op1 = frame.operandStack.top();
         frame.operandStack.pop();
-        JavaType &op2 = frame.operandStack.top();
+        JavaValue &op2 = frame.operandStack.top();
         frame.operandStack.pop();
-        JavaType resType = JavaType::createByType(JAVA_DATA_TYPE::INT_JDT);
+        JavaValue resType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
         resType.data.jInt = op1.data.jInt + op2.data.jInt;
         frame.operandStack.push(resType);
     }

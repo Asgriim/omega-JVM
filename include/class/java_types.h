@@ -34,12 +34,13 @@ union DataContent {
     int64_t jLong;
     double jDouble;
     const std::string *string;
+    struct ObjectInstance *obj;
 };
 
-struct JavaType {
+struct JavaValue {
 
-    static JavaType createByType(JAVA_DATA_TYPE type) {
-        JavaType javaType{};
+    static JavaValue createByType(JAVA_DATA_TYPE type) {
+        JavaValue javaType{};
         javaType.javaDataType = type;
         DataContent content{};
         switch (type) {
@@ -83,6 +84,9 @@ struct JavaType {
 
 };
 
-
+struct ObjectInstance {
+    JClass *type;
+    // list of fields
+};
 
 #endif //OMEGA_JVM_JAVA_TYPES_H

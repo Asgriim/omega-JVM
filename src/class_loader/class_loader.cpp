@@ -56,7 +56,7 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
             auto &descriptor = Resolver::resolveDescriptor(field, constPool);
 
             std::string fieldDescriptor = std::format("{}.{}:{}",jClassName, fieldName, descriptor);
-            JavaType type = JavaType::createByType(static_cast<JAVA_DATA_TYPE>(*descriptor.data()));
+            JavaValue type = JavaValue::createByType(static_cast<JAVA_DATA_TYPE>(*descriptor.data()));
             staticVars[fieldDescriptor] = type;
 
             //TODO handle refs and arrays
@@ -102,7 +102,7 @@ void BootstrapClassLoader::loadNative() {
         for (auto &fieldName : it.second) {
             std::string fieldDescriptor = std::format("{}.{}" , clName, fieldName);
             //todo placeholder
-            JavaType type = JavaType::createByType(JAVA_DATA_TYPE::CHAR_JDT);
+            JavaValue type = JavaValue::createByType(JAVA_DATA_TYPE::CHAR_JDT);
             auto &staticVars = m_heap->getFieldTable();
             staticVars[fieldDescriptor] = type;
         }

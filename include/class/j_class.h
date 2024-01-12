@@ -9,7 +9,7 @@
 #include "runtime/runtime_CP.h"
 #include "vm/resolver.h"
 
-typedef std::unordered_map<std::string, JavaType> VariablesTable;
+typedef std::unordered_map<std::string, JavaValue> VariablesTable;
 
 //todo not fully implemented
 class JClass {
