@@ -44,6 +44,37 @@ namespace jbcf {
     void ireturn(Frame &frame, std::stack<Frame> &stack);
 
     void pop(Frame &frame, std::stack<Frame> &stack);
+
+    void newarray(Frame &frame, std::stack<Frame> &stack);
+
+    void aload_n(Frame &frame, std::stack<Frame> &stack, uint32_t n);
+
+    void aload_0(Frame &frame, std::stack<Frame> &stack);
+
+    void aload_1(Frame &frame, std::stack<Frame> &stack);
+
+    void aload_2(Frame &frame, std::stack<Frame> &stack);
+
+    void aload_3(Frame &frame, std::stack<Frame> &stack);
+
+    void aload(Frame &frame, std::stack<Frame> &stack);
+
+    void astore_n(Frame &frame, std::stack<Frame> &stack, uint32_t n);
+
+    void astore(Frame &frame, std::stack<Frame> &stack);
+
+    void astore_0(Frame &frame, std::stack<Frame> &stack);
+
+    void astore_1(Frame &frame, std::stack<Frame> &stack);
+
+    void astore_2(Frame &frame, std::stack<Frame> &stack);
+
+    void astore_3(Frame &frame, std::stack<Frame> &stack);
+
+    void iastore(Frame &frame, std::stack<Frame> &stack);
+
+    void iaload(Frame &frame, std::stack<Frame> &stack);
+
 }
 
 

@@ -24,6 +24,24 @@ ByteOpMap Interpreter::m_byteOpMap = {
         {BYTECODE::IADD, jbcf::iadd},
         {BYTECODE::IRETURN, jbcf::ireturn},
         {BYTECODE::POP, jbcf::pop},
+        {BYTECODE::NEWARRAY, jbcf::newarray},
+        {BYTECODE::ALOAD, jbcf::aload},
+        {BYTECODE::ALOAD_0, jbcf::aload_0},
+        {BYTECODE::ALOAD_1, jbcf::aload_1},
+        {BYTECODE::ALOAD_2, jbcf::aload_2},
+        {BYTECODE::ALOAD_3, jbcf::aload_3},
+        {BYTECODE::ASTORE, jbcf::astore},
+        {BYTECODE::ASTORE_0, jbcf::astore_0},
+        {BYTECODE::ASTORE_1, jbcf::astore_1},
+        {BYTECODE::ASTORE_2, jbcf::astore_2},
+        {BYTECODE::ASTORE_3, jbcf::astore_3},
+        {BYTECODE::ILOAD, jbcf::aload},
+        {BYTECODE::ILOAD_0, jbcf::aload_0},
+        {BYTECODE::ILOAD_1, jbcf::aload_1},
+        {BYTECODE::ILOAD_2, jbcf::aload_2},
+        {BYTECODE::ILOAD_3, jbcf::aload_3},
+        {BYTECODE::IASTORE, jbcf::iastore},
+        {BYTECODE::IALOAD, jbcf::iaload}
 };
 
 void Interpreter::execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack) {
@@ -55,4 +73,14 @@ void Interpreter::execClInit(JClass &jClass) {
     Frame frame(methodData.codeAttribute, jClass.getRuntimeCp());
     auto *vm = VM::getInstatance();
     vm->execFrame(frame);
+}
+
+Frame& Interpreter::createFrame(RuntimeCP &runtimeCp, MethodData &methodData, std::stack<Frame> &frameStack) {
+    Frame frame(methodData.codeAttribute, runtimeCp);
+    frameStack.push(frame);
+    auto &ref = frameStack.top();
+    for (auto &type : methodData.localVarsType) {
+        ref.locals.emplace_back(JavaValue::createByType(type));
+    }
+    return ref;
 }

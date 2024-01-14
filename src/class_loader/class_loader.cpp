@@ -78,7 +78,9 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
 
             if (attributeType == ATTRIBUTE_TYPE::CODE_AT) {
                 auto &code = Resolver::getAttribute<CodeAttribute>(methodInfo.attributes,j);
-                MethodData methodData = {.codeAttribute = code};
+                MethodData methodData = {.codeAttribute = code, .isNative = static_cast<bool>((methodInfo.accessFlags & 0x0100))};
+                methodData.argCount = Resolver::getArgCount(descriptor);
+                loadMethodLocals(methodData,constPool);
                 m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
             }
         }
@@ -125,6 +127,20 @@ void BootstrapClassLoader::loadNative() {
 
 void BootstrapClassLoader::setJarFile(zip *jarFile) {
     m_jarFile = jarFile;
+}
+
+void BootstrapClassLoader::loadMethodLocals(MethodData &methodData, ConstPoolList &constPool) {
+    AttributesList &attributesList = methodData.codeAttribute.attributes;
+    for (int i = 0; i < methodData.codeAttribute.attributesCount; ++i) {
+        if (attributesList[i]->attributeType == ATTRIBUTE_TYPE::LocalVariableTable_AT) {
+            auto &localVars = Resolver::getAttribute<LocalVariableTableAttribute>(attributesList,i);
+            methodData.localVarsType = std::vector<JAVA_DATA_TYPE>(methodData.codeAttribute.maxLocals);
+            for (auto &entry: localVars.localVariableTable) {
+                std::string &descriptor = Resolver::resovleUTF8str(constPool, entry.descriptorIndex);
+                methodData.localVarsType[entry.index] = static_cast<JAVA_DATA_TYPE>(descriptor.at(0));
+            }
+        }
+    }
 }
 
 

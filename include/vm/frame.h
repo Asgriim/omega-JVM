@@ -14,6 +14,7 @@ struct Frame {
     CodeAttribute &methodBytecode;
     RuntimeCP &runtimeCp;
     std::stack<JavaValue> operandStack;
+    std::vector<JavaValue> locals;
     uint32_t pc = 0;
 };
 #endif //OMEGA_JVM_FRAME_H

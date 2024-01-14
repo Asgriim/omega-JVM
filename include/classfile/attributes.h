@@ -6,7 +6,7 @@
 #include <memory>
 #include <ostream>
 #include <vector>
-
+#include <unordered_map>
 
 
 
@@ -35,15 +35,23 @@
 enum ATTRIBUTE_TYPE {
     CODE_AT,
     BOOTSTRAP_METHODS_AT,
+    LocalVariableTable_AT,
+    METHOD_PARAMETERS_AT,
     //todo delete when implemnt all
     UNKNOWN_AT
 };
 
+static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
+        {"Code",CODE_AT},
+        {"BootstrapMethods",BOOTSTRAP_METHODS_AT},
+        {"LocalVariableTable", LocalVariableTable_AT},
+        {"MethodParameters", METHOD_PARAMETERS_AT}
+};
 
 struct AttributeInfo {
 
     virtual ~AttributeInfo() = default;
-
+    ATTRIBUTE_TYPE attributeType;
     uint16_t attributeNameIndex;
     uint32_t attributeLength;
 };
@@ -79,11 +87,33 @@ struct BootstrapMethodEntry {
     std::unique_ptr<uint16_t[]> bootstrapArguments;
 };
 
-struct BootstrapMethodsAttribute : public AttributeInfo{
+struct BootstrapMethodsAttribute : public AttributeInfo {
     uint16_t numBootstrapMethods;
     std::vector<BootstrapMethodEntry> bootstrapMethods;
 };
 
+struct LocalVariableEntry {
+    uint16_t startPc;
+    uint16_t length;
+    uint16_t nameIndex;
+    uint16_t descriptorIndex;
+    uint16_t index;
+};
+
+struct LocalVariableTableAttribute : public AttributeInfo {
+    uint16_t localVariableTableLength;
+    std::vector<LocalVariableEntry> localVariableTable;
+};
+
+struct MethodParameterEntry {
+    uint16_t nameIndex;
+    uint16_t access_flags;
+};
+
+struct MethodParametersAttribute : public AttributeInfo {
+    uint8_t parameters_count;
+    std::vector<MethodParameterEntry> parameters;
+};
 
 
 

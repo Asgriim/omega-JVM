@@ -92,6 +92,8 @@ class ClassFileStream {
 
         ClassFileStream &operator>>(UnknownAttr &attribute);
 
+        ClassFileStream &operator>>(LocalVariableTableAttribute &attribute);
+
     private:
         void allocBuf();
         void getFileLen();

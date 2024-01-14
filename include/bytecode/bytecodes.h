@@ -14,13 +14,19 @@ enum BYTECODE : uint8_t {
     RETURN         = 0xB1,
     ACONST_NULL    = 0x01,
     ALOAD          = 0x19,
-    ALOAD_N        = 0x2A,
-    ANEW_ARRAY     = 0xBD,
+    ALOAD_0        = 0x2A,
+    ALOAD_1        = 0x2b,
+    ALOAD_2        = 0x2c,
+    ALOAD_3        = 0x2d,
+    ANEWARRAY      = 0xBD,
     ARETURN        = 0xB0,
     ARRAY_LENGTH   = 0xBE,
     ASTORE         = 0x3A,
     //TODO *_N BYTECODES HANDLES SPECIAL
-    ASTORE_N       = 0x4B,
+    ASTORE_0       = 0x4B,
+    ASTORE_1       = 0x4c,
+    ASTORE_2       = 0x4d,
+    ASTORE_3       = 0x4B,
     ATHROW         = 0xbf,
     BALOAD         = 0x33,
     BASTORE        = 0x54,
@@ -58,6 +64,14 @@ enum BYTECODE : uint8_t {
     INVOKESTATIC   = 0xb8,
     IADD           = 0x60,
     IRETURN        = 0xac,
-    POP            = 0x57
+    POP            = 0x57,
+    NEWARRAY       = 0xbc,
+    ILOAD          = 0x15,
+    ILOAD_0        = 0x1a,
+    ILOAD_1        = 0x1b,
+    ILOAD_2        = 0x1c,
+    ILOAD_3        = 0x1d,
+    IASTORE        = 0x4f,
+    IALOAD         = 0x2e
 };
 #endif //OMEGA_JVM_BYTECODES_H

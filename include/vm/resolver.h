@@ -9,16 +9,10 @@
 #include <format>
 #include "vector"
 //todo 30 attrs :(
-static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
-        {"Code",CODE_AT},
-        {"BootstrapMethods",BOOTSTRAP_METHODS_AT}
-};
+
 
 class Resolver {
     public:
-
-
-
 
         //constants starts from 1
         template<class T>
@@ -92,6 +86,30 @@ class Resolver {
             auto nameAndType = resolveNameAndType(constPool,fieldRef.nameAndTypeIndex);
             std::erase(nameAndType,';');
             return std::format("{}.{}", clName, nameAndType);
+        }
+
+        static uint32_t getArgCount(std::string &descriptor) {
+            size_t i = 1;
+            uint32_t count = 0;
+            char c = descriptor.at(i);
+            while (c != ')') {
+                if (c == 'L') {
+                    while (c != ';') {
+                        i++;
+                        c = descriptor.at(i);
+                    }
+                }
+                if (c == '[') {
+                    while (c == '[') {
+                        i++;
+                        c = descriptor.at(i);
+                    }
+                }
+                count++;
+                i++;
+                c = descriptor.at(i);
+            }
+            return count;
         }
 
 };

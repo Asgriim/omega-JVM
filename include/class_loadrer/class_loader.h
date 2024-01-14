@@ -14,7 +14,7 @@ class BootstrapClassLoader {
 
         JClass loadClass(const std::string& classPath);
         void loadNative();
-
+        void loadMethodLocals(MethodData &methodData, ConstPoolList &constPool);
         void setJarFile(zip *jarFile);
 
 private:

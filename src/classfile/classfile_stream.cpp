@@ -228,6 +228,7 @@ ClassFileStream &ClassFileStream::operator>>(uint64_t &uint) {
 }
 
 ClassFileStream &ClassFileStream::operator>>(BootstrapMethodsAttribute &attribute) {
+    attribute.attributeType = BOOTSTRAP_METHODS_AT;
     attribute.numBootstrapMethods = readU2();
     attribute.bootstrapMethods = std::vector<BootstrapMethodEntry>(attribute.numBootstrapMethods);
     for (int i = 0; i < attribute.numBootstrapMethods; ++i) {
@@ -243,12 +244,14 @@ ClassFileStream &ClassFileStream::operator>>(BootstrapMethodsAttribute &attribut
 }
 
 ClassFileStream &ClassFileStream::operator>>(UnknownAttr &attribute) {
+    attribute.attributeType = UNKNOWN_AT;
     attribute.info = std::make_unique<uint8_t[]>(attribute.attributeLength);
     readBytes(attribute.info.get(),attribute.attributeLength);
     return *this;
 }
 
 ClassFileStream &ClassFileStream::operator>>(CodeAttribute &attribute) {
+    attribute.attributeType = CODE_AT;
     attribute.maxStack = readU2();
     attribute.maxLocals = readU2();
     attribute.codeLength = readU4();
@@ -267,6 +270,21 @@ ClassFileStream &ClassFileStream::operator>>(CodeAttribute &attribute) {
     attribute.attributesCount = readU2();
     attribute.attributes = AttributesList(attribute.attributesCount);
 
+    return *this;
+}
+
+ClassFileStream &ClassFileStream::operator>>(LocalVariableTableAttribute &attribute) {
+    attribute.localVariableTableLength = readU2();
+    attribute.attributeType = LocalVariableTable_AT;
+    for (int i = 0; i < attribute.localVariableTableLength; ++i) {
+        LocalVariableEntry entry{};
+        entry.startPc = readU2();
+        entry.index = readU2();
+        entry.nameIndex = readU2();
+        entry.descriptorIndex = readU2();
+        entry.index = readU2();
+        attribute.localVariableTable.emplace_back(entry);
+    }
     return *this;
 }
 

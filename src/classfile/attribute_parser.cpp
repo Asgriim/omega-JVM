@@ -12,7 +12,7 @@ void AttributeParser::parseAttributes(ClassFile &classFile, AttributesList &attr
 
             case CODE_AT: {
                 auto &codeAttr = readAttribute<CodeAttribute>(attributes, i, attrNameInd, attrLength);
-                parseAttributes(classFile,codeAttr.attributes, codeAttr.attributesCount);
+                parseAttributes(classFile, codeAttr.attributes, codeAttr.attributesCount);
                 break;
             }
             case BOOTSTRAP_METHODS_AT: {
@@ -21,6 +21,10 @@ void AttributeParser::parseAttributes(ClassFile &classFile, AttributesList &attr
             }
             case UNKNOWN_AT: {
                 readAttribute<UnknownAttr>(attributes,i,attrNameInd,attrLength);
+                break;
+            }
+            case LocalVariableTable_AT: {
+                readAttribute<LocalVariableTableAttribute>(attributes,i,attrNameInd,attrLength);
                 break;
             }
         }

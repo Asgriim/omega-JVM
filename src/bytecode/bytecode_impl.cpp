@@ -1,6 +1,6 @@
 #include "bytecode/bytecode_impl.h"
 #include "bytecode/native.h"
-
+#include "bytecode/interpreter.h"
 
 namespace jbcf {
 
@@ -238,9 +238,13 @@ namespace jbcf {
             return;
         }
         JClass &jclass = runtimeArea->getClass(methodName.substr(0,methodName.find('.')));
-        Frame newFrame(methodData.codeAttribute, jclass.getRuntimeCp());
-        newFrame.operandStack = frame.operandStack;
-        stack.push(newFrame);
+//        Frame newFrame(methodData.codeAttribute, jclass.getRuntimeCp());
+        Frame &newFrame = Interpreter::createFrame(jclass.getRuntimeCp(),methodData, stack);
+        //todo well fell strange
+        for (int i = methodData.argCount - 1; i >= 0 ; i--) {
+            newFrame.locals[i] = frame.operandStack.top();
+            frame.operandStack.pop();
+        }
     }
 
     void iadd(Frame &frame, std::stack<Frame> &stack) {
@@ -264,6 +268,125 @@ namespace jbcf {
 
     void pop(Frame &frame, std::stack<Frame> &stack) {
         frame.operandStack.pop();
+    }
+
+    void newarray(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint8_t byte = frame.methodBytecode.code[frame.pc];
+        uint32_t count = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::REF_ARR);
+        void *ptr = nullptr;
+        switch (byte) {
+            case 4: {
+                ptr = new bool[count];
+                break;
+            }
+            case 5: {
+                ptr = new char[count];
+                break;
+            }
+            case 6: {
+                ptr = new float [count];
+                break;
+            }
+            case 7: {
+                ptr = new double [count];
+                break;
+            }
+            case 8: {
+                ptr = new int8_t [count];
+                break;
+            }
+            case 9: {
+                ptr = new int16_t[count];
+                break;
+            }
+            case 10: {
+                ptr = new int32_t [count];
+                break;
+            }
+            case 11: {
+                ptr = new int64_t [count];
+                break;
+            }
+
+        }
+        javaValue.data.jArray = new JArray{.type = byte, .array = ptr};
+        frame.operandStack.push(javaValue);
+    }
+
+    void aload_n(Frame &frame, std::stack<Frame> &stack, uint32_t n) {
+        frame.operandStack.push(frame.locals[n]);
+    }
+
+    void aload_0(Frame &frame, std::stack<Frame> &stack) {
+        aload_n(frame, stack, 0);
+    }
+
+    void aload_1(Frame &frame, std::stack<Frame> &stack) {
+        aload_n(frame, stack, 1);
+    }
+
+    void aload_2(Frame &frame, std::stack<Frame> &stack) {
+        aload_n(frame, stack, 2);
+    }
+
+    void aload_3(Frame &frame, std::stack<Frame> &stack) {
+        aload_n(frame, stack, 3);
+    }
+
+    void aload(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint8_t byte = frame.methodBytecode.code[frame.pc];
+        aload_n(frame, stack, byte);
+    }
+
+    void astore_n(Frame &frame, std::stack<Frame> &stack, uint32_t n) {
+        frame.locals[n] = frame.operandStack.top();
+        frame.operandStack.pop();
+    }
+
+    void astore(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint8_t byte = frame.methodBytecode.code[frame.pc];
+        astore_n(frame,stack,byte);
+    }
+
+    void astore_0(Frame &frame, std::stack<Frame> &stack) {
+        astore_n(frame,stack,0);
+    }
+
+    void astore_1(Frame &frame, std::stack<Frame> &stack) {
+        astore_n(frame,stack,1);
+    }
+
+    void astore_2(Frame &frame, std::stack<Frame> &stack) {
+        astore_n(frame,stack,2);
+    }
+
+    void astore_3(Frame &frame, std::stack<Frame> &stack) {
+        astore_n(frame,stack,3);
+    }
+
+    void iastore(Frame &frame, std::stack<Frame> &stack) {
+        int32_t value = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        uint32_t ind = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        int *arr = static_cast<int *>(frame.operandStack.top().data.jArray->array);
+        arr[ind] = value;
+        frame.operandStack.pop();
+    }
+
+    void iaload(Frame &frame, std::stack<Frame> &stack) {
+        uint32_t ind = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        int *arr = static_cast<int *>(frame.operandStack.top().data.jArray->array);
+        JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaValue.data.jInt = arr[ind];
+        frame.operandStack.pop();
+        frame.operandStack.push(javaValue);
     }
 
 }

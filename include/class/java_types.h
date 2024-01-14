@@ -20,6 +20,16 @@ enum JAVA_DATA_TYPE : char {
     STRING_CONST
 };
 
+struct JArray {
+    uint8_t type;
+    void *array;
+};
+
+struct ObjectInstance {
+//    JClass *type;
+    // list of fields
+};
+
 //std::variant not usable here
 union DataContent {
     bool jBool;
@@ -34,7 +44,8 @@ union DataContent {
     int64_t jLong;
     double jDouble;
     const std::string *string;
-    struct ObjectInstance *obj;
+    ObjectInstance *obj;
+    JArray *jArray;
 };
 
 struct JavaValue {
@@ -66,13 +77,17 @@ struct JavaValue {
             case REF_JDT:
                 //TODO damn man
                 break;
-            case REF_ARR:
+            case REF_ARR: {
+                content.jArray = nullptr;
                 break;
+            }
             case LONG_JDT:
                 content.jLong = 0;
                 break;
             case DOUBLE_JDT:
                 content.jDouble = 0.0;
+                break;
+            case STRING_CONST:
                 break;
         }
         javaType.data = content;
@@ -84,9 +99,5 @@ struct JavaValue {
 
 };
 
-struct ObjectInstance {
-    JClass *type;
-    // list of fields
-};
 
 #endif //OMEGA_JVM_JAVA_TYPES_H

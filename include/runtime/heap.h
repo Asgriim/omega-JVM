@@ -12,7 +12,9 @@
 
 struct MethodData {
     CodeAttribute &codeAttribute;
+    std::vector<JAVA_DATA_TYPE> localVarsType;
     bool isNative = false;
+    uint32_t argCount;
 };
 
 struct MethodArea {
