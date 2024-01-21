@@ -14,13 +14,20 @@ public class Main implements A {
         System.out.println(sus);
         sus++;
         int[] arr = new int[5];
-        arr[0] = a;
-        System.out.println(arr[0]);
+        arr[2] = a;
+        System.out.println(arr[2]);
         return sus;
     }
 
     public static void main(String[] args) {
-        addSus(42,1);
+//         addSus(42,1);
+//        Y y1 = new Y(213);
+//        Y y = new Y();
+//        y.getI();
+//        Y.setZ(1);
+         System.out.println(Y.get());
+         X.setZ(12);
+         System.out.println(Y.get());
     }
 
     @Override

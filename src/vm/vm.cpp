@@ -80,6 +80,7 @@ std::stack<Frame> *VM::getStack() const {
 }
 
 void VM::execFrame(Frame &frame) {
+    m_stack->push(frame);
     while (frame.pc < frame.methodBytecode.codeLength) {
         uint32_t pc = frame.pc;
         auto code = static_cast<BYTECODE>(frame.methodBytecode.code[pc]);

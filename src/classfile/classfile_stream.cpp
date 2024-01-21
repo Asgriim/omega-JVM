@@ -82,11 +82,14 @@ void ClassFileStream::getFileLen() {
 }
 
 void ClassFileStream::readString(std::string &string, uint64_t len) {
-    auto *chars = new uint8_t[len];
+//    auto *chars = new uint8_t[len + 1];
     for (int i = 0; i < len; ++i) {
-        chars[i] = readU1();
+//        chars[i] = readU1();
+        string.push_back(readU1());
     }
-    string.assign(reinterpret_cast<const char *>(chars));
+//    chars[len + 1] = 0;
+
+//    string.assign(reinterpret_cast<const char *>(chars));
 }
 
 

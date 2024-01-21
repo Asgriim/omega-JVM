@@ -29,7 +29,7 @@ class RuntimeArea {
 
         JClass& getMainClass();
 
-        JavaValue& getField(const std::string& fieldName);
+        JField& getField(const std::string& fieldName);
 
         bool isClInitExist(const std::string &clName) {
             return m_heap->getMethodArea().methodMap.contains(clName + ".<clinit>:()V");
@@ -46,12 +46,20 @@ class RuntimeArea {
 
         bool isJar() const;
 
-private:
+    private:
             RuntimeArea();
+
+            MethodData &lookUpMethod(JClass &jClass, const std::string &methodName);
+            JField &lookUpField(JClass &jClass, const std::string &fieldName);
+
+
             zip *m_jarFile;
             bool m_jar;
             static RuntimeArea *m_instance;
             Heap *m_heap;
             BootstrapClassLoader m_bootstrapClassLoader;
+
+
+
 };
 #endif //OMEGA_JVM_RUNTIME_AREA_H

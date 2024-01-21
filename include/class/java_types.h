@@ -23,6 +23,7 @@ enum JAVA_DATA_TYPE : char {
 struct JArray {
     uint8_t type;
     void *array;
+    uint32_t length;
 };
 
 struct ObjectInstance {
@@ -93,7 +94,6 @@ struct JavaValue {
         javaType.data = content;
         return javaType;
     };
-
     JAVA_DATA_TYPE javaDataType;
     DataContent data;
 

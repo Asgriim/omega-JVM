@@ -32,24 +32,34 @@ JClass& RuntimeArea::getMainClass() {
     abort();
 }
 
+MethodData& RuntimeArea::lookUpMethod(JClass &jClass, const std::string &methodName) {
+    std::string mFullName = jClass.getClassName() + "." + methodName;
+    if (m_heap->getMethodArea().methodMap.contains(mFullName)) {
+        return m_heap->getMethodArea().methodMap.find(mFullName)->second;
+    } else {
+        JClass &parent = getClass(jClass.getParent());
+
+        if (parent.isNative() && !m_heap->getMethodArea().methodMap.contains(parent.getClassName() + "." + methodName)) {
+            std::cerr << std::format("METHOD NOT FOUND: {} \n", methodName);
+            exit(-1);
+            //can't get here
+            abort();
+        }
+        return lookUpMethod(parent, methodName);
+    }
+};
+
 MethodData &RuntimeArea::getMethod(const std::string &methodName) {
+    auto clName = methodName.substr(0, methodName.find("."));
+    auto methodDesc = methodName.substr(methodName.find(".") + 1, methodName.length());
+//    if (m_jar && !m_heap->getJClassTable().contains(clName)) {
+//        loadClass(clName);
+//    }
 
-    if (m_jar && !m_heap->getMethodArea().methodMap.contains(methodName)) {
-        auto clName = methodName.substr(0, methodName.find("."));
-        loadClass(clName);
-    }
+    JClass &jClass = getClass(clName);
 
-    auto it = m_heap->getMethodArea().methodMap.find(methodName);
+    return lookUpMethod(jClass, methodDesc);
 
-    if (it != m_heap->getMethodArea().methodMap.end()) {
-        return it->second;
-    }
-
-
-    std::cerr << std::format("METHOD NOT FOUND: {} \n", methodName);
-    exit(-1);
-    //can't get here
-    abort();
 }
 
 void RuntimeArea::loadNative() {
@@ -78,18 +88,33 @@ JClass &RuntimeArea::getClass(const std::string &className) {
     abort();
 }
 
-JavaValue &RuntimeArea::getField(const std::string &fieldName) {
-    if (m_jar && !m_heap->getFieldTable().contains(fieldName)) {
-        loadClass(fieldName.substr(0,fieldName.find('.')));
-    }
 
-    auto it = m_heap->getFieldTable().find(fieldName);
-    if (it != m_heap->getFieldTable().end()) {
-        return it->second;
-    }
 
-    std::cerr << std::format("field NOT FOUND: {} \n", fieldName);
-    exit(-1);
+JField& RuntimeArea::lookUpField(JClass &jClass, const std::string &fieldName) {
+    std::string mFullName = jClass.getClassName() + "." + fieldName;
+    if (jClass.getDeclaredFields().contains(fieldName)) {
+        return jClass.getDeclaredFields().find(fieldName)->second;
+    } else {
+        JClass &parent = getClass(jClass.getParent());
+
+        if (parent.isNative() && !parent.getDeclaredFields().contains(fieldName)) {
+            std::cerr << std::format(" NOT FOUND: {} \n", fieldName);
+            exit(-1);
+            //can't get here
+            abort();
+        }
+        return lookUpField(parent, fieldName);
+    }
+};
+
+
+JField& RuntimeArea::getField(const std::string &fieldName) {
+    auto clName = fieldName.substr(0, fieldName.find("."));
+    auto fieldDesc = fieldName.substr(fieldName.find(".") + 1, fieldName.length());
+
+    JClass &jClass = getClass(clName);
+    return lookUpField(jClass, fieldDesc);
+
 }
 
 

@@ -21,8 +21,12 @@ static std::unordered_map<std::string, std::vector<std::string>> nativeClasMetho
 
 static std::unordered_map<std::string, std::vector<std::string>> nativeClasFields = {
         {"java/lang/System",
-         {"out:Ljava/io/PrintStream"}
-        }
+             {"out:Ljava/io/PrintStream"}
+        },
+        {"java/lang/Object",
+            {}
+        },
+        {"java/io/PrintStream", {}}
 };
 
 

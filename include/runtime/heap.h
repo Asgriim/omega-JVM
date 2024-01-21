@@ -12,9 +12,15 @@
 
 struct MethodData {
     CodeAttribute &codeAttribute;
+    //TODO rewrite on classes
     std::vector<JAVA_DATA_TYPE> localVarsType;
+//    std::vector<JClass*> localVarsType;
     bool isNative = false;
+    bool isStatic = false;
     uint32_t argCount;
+    std::string className;
+    std::string name;
+    std::string descriptor;
 };
 
 struct MethodArea {
@@ -43,20 +49,20 @@ class Heap {
             return *m_JClassTable;
         }
 
-        std::unordered_map<std::string, JavaValue>& getFieldTable() {
-            return *m_FieldTable;
-        }
+//        std::unordered_map<std::string, JavaValue>& getFieldTable() {
+//            return *m_FieldTable;
+//        }
 
 private:
         Heap() {
             m_methodArea = new MethodArea();
             m_JClassTable = new std::unordered_map<std::string, JClass>;
-            m_FieldTable =  new std::unordered_map<std::string, JavaValue>;
+//            m_FieldTable =  new std::unordered_map<std::string, JavaValue>;
         }
 
         static Heap *m_instance;
         MethodArea *m_methodArea;
         std::unordered_map<std::string, JClass> *m_JClassTable;
-        std::unordered_map<std::string, JavaValue> *m_FieldTable;
+//        std::unordered_map<std::string, JavaValue> *m_FieldTable;
 };
 #endif //OMEGA_JVM_HEAP_H

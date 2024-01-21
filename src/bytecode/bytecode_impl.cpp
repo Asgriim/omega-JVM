@@ -10,8 +10,8 @@ namespace jbcf {
         frame.pc++;
         index |= frame.methodBytecode.code[frame.pc];
         std::string fieldName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
-        JavaValue &javaType = RuntimeArea::getInstance()->getField(fieldName);
-//        JavaValue javaType;
+        JavaValue &javaType = RuntimeArea::getInstance()->getField(fieldName).value;
+//        JavaValue ja vaType;
 //        javaType.javaDataType = JAVA_DATA_TYPE::REF_JDT;
 //        javaType.data.refInfo = &fieldRef;
         frame.operandStack.push(javaType);
@@ -184,7 +184,7 @@ namespace jbcf {
         index |= frame.methodBytecode.code[frame.pc];
         std::string fieldFullName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
         RuntimeArea *runtimeArea = RuntimeArea::getInstance();
-        JavaValue &javaType = runtimeArea->getField(fieldFullName);
+        JavaValue &javaType = runtimeArea->getField(fieldFullName).value;
         switch (javaType.javaDataType) {
 
             case BOOL_JDT:
@@ -237,7 +237,7 @@ namespace jbcf {
             nativeMap.find(methodName)->second(frame, stack);
             return;
         }
-        JClass &jclass = runtimeArea->getClass(methodName.substr(0,methodName.find('.')));
+        JClass &jclass = runtimeArea->getClass(methodData.className);
 //        Frame newFrame(methodData.codeAttribute, jclass.getRuntimeCp());
         Frame &newFrame = Interpreter::createFrame(jclass.getRuntimeCp(),methodData, stack);
         //todo well fell strange
@@ -259,10 +259,12 @@ namespace jbcf {
 
     void ireturn(Frame &frame, std::stack<Frame> &stack) {
         if (!stack.empty()) {
+
+            auto i = frame.operandStack.top();
             stack.pop();
-            auto &i = frame.operandStack.top();
-            frame.operandStack.pop();
             stack.top().operandStack.push(i);
+            frame.operandStack.pop();
+
         }
     }
 

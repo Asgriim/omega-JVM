@@ -80,6 +80,9 @@ class Resolver {
         }
 
         static std::string resoveFieldFullName(ConstPoolList &constPool, uint16_t ind) {
+            if (ind == 13) {
+
+            }
             auto &fieldRef = getConstant<FieldRefConst>(constPool, ind);
             auto &cl = getConstant<ClassInfoConst>(constPool, fieldRef.classIndex);
             std::string &clName = resolveNameIndex(cl, constPool);
