@@ -41,7 +41,13 @@ ByteOpMap Interpreter::m_byteOpMap = {
         {BYTECODE::ILOAD_2, jbcf::aload_2},
         {BYTECODE::ILOAD_3, jbcf::aload_3},
         {BYTECODE::IASTORE, jbcf::iastore},
-        {BYTECODE::IALOAD, jbcf::iaload}
+        {BYTECODE::IALOAD, jbcf::iaload},
+        {BYTECODE::NEW, jbcf::jnew},
+        {BYTECODE::DUP, jbcf::dup},
+        {BYTECODE::SIPUSH, jbcf::sipush},
+        {BYTECODE::INVOKESPECIAL, jbcf::invokespecial},
+        {BYTECODE::PUTFIELD, jbcf::putfield},
+        {BYTECODE::GETFIELD, jbcf::getfield},
 };
 
 void Interpreter::execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack) {

@@ -117,6 +117,31 @@ JField& RuntimeArea::getField(const std::string &fieldName) {
 
 }
 
+ObjectInstance* RuntimeArea::createJObj(JClass &jClass) {
+    ObjectInstance *object = new ObjectInstance();
+    object->type = &jClass;
+    allocFields(object, jClass);
+    return object;
+}
+
+void RuntimeArea::allocFields(ObjectInstance *object, JClass &jClass) {
+    if (jClass.isNative()) {
+        return;
+    }
+
+    for (auto &it : jClass.getDeclaredFields()) {
+        if (!it.second.isStatic) {
+            JField jField;
+            jField.isStatic = false;
+            jField.value = JavaValue::createByType(it.second.value.javaDataType);
+            jField.name = it.second.name;
+            object->objFields[it.first] = jField;
+        }
+    }
+
+    allocFields(object, getClass(jClass.getParent()));
+}
+
 
 
 

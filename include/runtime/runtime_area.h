@@ -44,6 +44,8 @@ class RuntimeArea {
             m_jar = true;
         }
 
+        ObjectInstance* createJObj(JClass &jClass);
+
         bool isJar() const;
 
     private:
@@ -51,7 +53,7 @@ class RuntimeArea {
 
             MethodData &lookUpMethod(JClass &jClass, const std::string &methodName);
             JField &lookUpField(JClass &jClass, const std::string &fieldName);
-
+            void allocFields(ObjectInstance *object, JClass &jClass);
 
             zip *m_jarFile;
             bool m_jar;

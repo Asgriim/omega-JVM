@@ -14,5 +14,7 @@ public class Y extends X{
         return y;
     }
 
-
+    public void setY(int y) {
+        this.y = y;
+    }
 }

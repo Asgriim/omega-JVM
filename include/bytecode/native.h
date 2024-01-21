@@ -16,6 +16,9 @@ static std::unordered_map<std::string, std::vector<std::string>> nativeClasMetho
                         "println:(Ljava/lang/String;)V",
                         "println:(I)V"
                  }
+        },
+        {"java/lang/Object",
+            {"<init>:()V"}
         }
 };
 

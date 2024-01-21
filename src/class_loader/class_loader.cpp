@@ -83,7 +83,12 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
                 methodData.name = methodName;
                 methodData.descriptor = descriptor;
                 methodData.className = jClassName;
+                methodData.isStatic = methodInfo.accessFlags & 0x0008;
+
                 loadMethodLocals(methodData,constPool);
+                if (!methodData.isStatic) {
+                    methodData.argCount++;
+                }
                 m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
             }
         }
@@ -124,7 +129,6 @@ void BootstrapClassLoader::loadNative() {
         m_heap->getJClassTable().insert({clName, jClass});
     }
 
-    //todo add all primitive types
     CodeAttribute emptyCode;
     for (auto &it : nativeClasMethods) {
         std::string clName = it.first;
@@ -132,6 +136,8 @@ void BootstrapClassLoader::loadNative() {
             std::string methodFullName = std::format("{}.{}", clName, methodName);
 
             MethodData methodData = {.codeAttribute = emptyCode, .isNative = true};
+            methodData.className = clName;
+            methodData.name = methodName;
             m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
         }
     }

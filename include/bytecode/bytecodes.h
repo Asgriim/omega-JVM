@@ -22,7 +22,6 @@ enum BYTECODE : uint8_t {
     ARETURN        = 0xB0,
     ARRAY_LENGTH   = 0xBE,
     ASTORE         = 0x3A,
-    //TODO *_N BYTECODES HANDLES SPECIAL
     ASTORE_0       = 0x4B,
     ASTORE_1       = 0x4c,
     ASTORE_2       = 0x4d,
@@ -72,6 +71,11 @@ enum BYTECODE : uint8_t {
     ILOAD_2        = 0x1c,
     ILOAD_3        = 0x1d,
     IASTORE        = 0x4f,
-    IALOAD         = 0x2e
+    IALOAD         = 0x2e,
+    NEW            = 0xbb,
+    SIPUSH         = 0x11,
+    INVOKESPECIAL  = 0xb7,
+    PUTFIELD       = 0xb5,
+    GETFIELD       = 0xb4
 };
 #endif //OMEGA_JVM_BYTECODES_H

@@ -75,6 +75,18 @@ namespace jbcf {
 
     void iaload(Frame &frame, std::stack<Frame> &stack);
 
+    void jnew(Frame &frame, std::stack<Frame> &stack);
+
+    void dup(Frame &frame, std::stack<Frame> &stack);
+
+    void sipush(Frame &frame, std::stack<Frame> &stack);
+
+    void invokespecial(Frame &frame, std::stack<Frame> &stack);
+
+    void putfield(Frame &frame, std::stack<Frame> &stack);
+
+    void getfield(Frame &frame, std::stack<Frame> &stack);
+
 }
 
 

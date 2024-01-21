@@ -107,6 +107,8 @@ namespace jbcf {
         frame.operandStack.push(javaType);
     }
 
+
+    //todo impl invoke virtual
     void invokevirtual(Frame &frame, std::stack<Frame> &stack) {
 
         //resolve method -> if native -> execute -> else create new frame
@@ -127,6 +129,14 @@ namespace jbcf {
             nativeMap.find(methodFullName)->second(frame, stack);
             return;
         }
+        JClass &jclass = runtimeArea->getClass(methodData.className);
+        Frame &newFrame = Interpreter::createFrame(jclass.getRuntimeCp(),methodData, stack);
+
+        for (int i = methodData.argCount - 1; i >= 0 ; i--) {
+            newFrame.locals[i] = frame.operandStack.top();
+            frame.operandStack.pop();
+        }
+
     }
 
     void jreturn(Frame &frame, std::stack<Frame> &stack){
@@ -390,5 +400,93 @@ namespace jbcf {
         frame.operandStack.pop();
         frame.operandStack.push(javaValue);
     }
+
+    void jnew(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        auto &classConst = frame.runtimeCp.getConstant<ClassInfoConst>(index);
+        std::string &className = Resolver::resolveNameIndex(classConst, frame.runtimeCp.getConstPool());
+        RuntimeArea *runtimeArea = RuntimeArea::getInstance();
+        JClass &jClass = runtimeArea->getClass(className);
+        ObjectInstance *object = runtimeArea->createJObj(jClass);
+        JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::REF_JDT);
+        javaValue.data.jobj = object;
+        frame.operandStack.push(javaValue);
+    }
+
+    void dup(Frame &frame, std::stack<Frame> &stack) {
+        frame.operandStack.push(frame.operandStack.top());
+    }
+
+    void sipush(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t i = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        i |= frame.methodBytecode.code[frame.pc];
+        JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
+        javaValue.data.jInt = i;
+        frame.operandStack.push(javaValue);
+    }
+
+    void invokespecial(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        std::string methodName = Resolver::resolveMethodFullName(frame.runtimeCp.getConstPool(),index);
+        RuntimeArea *runtimeArea = RuntimeArea::getInstance();
+        MethodData &methodData = runtimeArea->getMethod(methodName);
+        JClass &jclass = runtimeArea->getClass(methodData.className);
+
+        if (jclass.isNative()) {
+            return;
+        }
+
+        Frame &newFrame = Interpreter::createFrame(jclass.getRuntimeCp(),methodData, stack);
+        for (int i = methodData.argCount - 1; i >= 0 ; i--) {
+            newFrame.locals[i] = frame.operandStack.top();
+            frame.operandStack.pop();
+        }
+    }
+
+    void putfield(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        auto fieldRef = frame.runtimeCp.getConstant<FieldRefConst>(index);
+        std::string nameAndType = Resolver::resolveNameAndType(frame.runtimeCp.getConstPool(),fieldRef.nameAndTypeIndex);
+        JavaValue javaValue = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue objectRef =  frame.operandStack.top();
+        ObjectInstance *obj = objectRef.data.jobj;
+        frame.operandStack.pop();
+
+        if (obj->objFields.contains(nameAndType)) {
+            obj->objFields.find(nameAndType)->second.value = javaValue;
+        } else {
+            std::cerr << std::format("FIELD NOT FOUND: {} \n", nameAndType);
+        }
+    }
+
+    void getfield(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        auto fieldRef = frame.runtimeCp.getConstant<FieldRefConst>(index);
+        std::string nameAndType = Resolver::resolveNameAndType(frame.runtimeCp.getConstPool(),fieldRef.nameAndTypeIndex);
+        JavaValue objectRef =  frame.operandStack.top();
+        ObjectInstance *obj = objectRef.data.jobj;
+        frame.operandStack.pop();
+        if (obj->objFields.contains(nameAndType)) {
+            frame.operandStack.push(obj->objFields.find(nameAndType)->second.value);
+        } else {
+            std::cerr << std::format("FIELD NOT FOUND: {} \n", nameAndType);
+        }
+    }
+
 
 }

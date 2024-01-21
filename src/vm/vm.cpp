@@ -19,10 +19,13 @@ void VM::init(zip *jarFile) {
 
     JClass &mainCl = m_runtimeArea->getClass(mainClName);
 
-    Frame frame(method.codeAttribute,
-                mainCl.getRuntimeCp());
+    Interpreter::createFrame(mainCl.getRuntimeCp(), method, *m_stack);
+//    Frame frame(method.codeAttribute,
+//                mainCl.getRuntimeCp());
 
-    m_stack->push(frame);
+//    frame.locals
+
+//    m_stack->push(frame);
 
 }
 
@@ -37,10 +40,7 @@ void VM::init(const std::vector<std::string> &classFiles) {
 
     MethodData &method = m_runtimeArea->getMethod(mainCl.getClassName() + ".main:([Ljava/lang/String;)V");
 
-    Frame frame(method.codeAttribute,
-                mainCl.getRuntimeCp());
-
-    m_stack->push(frame);
+    Interpreter::createFrame(mainCl.getRuntimeCp(), method, *m_stack);
 
 }
 

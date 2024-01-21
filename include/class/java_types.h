@@ -6,6 +6,11 @@
 #include "cstdint"
 #include "classfile/constant_pool.h"
 
+class JClass;
+struct JField;
+
+typedef std::unordered_map<std::string, JField> DeclaredFields;
+
 enum JAVA_DATA_TYPE : char {
     BOOL_JDT   = 'Z',
     BYTE_JDT   = 'B',
@@ -20,6 +25,8 @@ enum JAVA_DATA_TYPE : char {
     STRING_CONST
 };
 
+
+
 struct JArray {
     uint8_t type;
     void *array;
@@ -27,8 +34,8 @@ struct JArray {
 };
 
 struct ObjectInstance {
-//    JClass *type;
-    // list of fields
+    JClass *type;
+    DeclaredFields objFields;
 };
 
 //std::variant not usable here
@@ -45,7 +52,7 @@ union DataContent {
     int64_t jLong;
     double jDouble;
     const std::string *string;
-    ObjectInstance *obj;
+    ObjectInstance *jobj;
     JArray *jArray;
 };
 
@@ -76,7 +83,7 @@ struct JavaValue {
                 content.jFloat = 0.0;
                 break;
             case REF_JDT:
-                //TODO damn man
+                content.jobj = nullptr;
                 break;
             case REF_ARR: {
                 content.jArray = nullptr;
