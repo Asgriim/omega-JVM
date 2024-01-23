@@ -8,6 +8,7 @@
 #include "unordered_map"
 #include <format>
 #include "vector"
+#include "class/java_types.h"
 //todo 30 attrs :(
 
 
@@ -90,6 +91,22 @@ class Resolver {
             std::erase(nameAndType,';');
             return std::format("{}.{}", clName, nameAndType);
         }
+        
+        static JavaValue resolveElementValue(ElementValuePair &valuePair, ClassFile &classFile) {
+            switch (valuePair.value.tag) {
+                case 's': {
+                    ConstValue *constValue = dynamic_cast<ConstValue *>(valuePair.value.value);
+                    JavaValue javaValue;
+                    javaValue.javaDataType = JAVA_DATA_TYPE::STRING_CONST;
+                    javaValue.data.string = &resovleUTF8str(classFile.constantPool,constValue->constValueIndex);
+                    return javaValue;
+                }
+                default: {
+                    std::cerr << "ONLY STRING LITERAL IN ANNOTATIONS SUPPORTED RIGHT NOW\n";
+                    exit(-1);
+                }
+            }
+        }
 
         static uint32_t getArgCount(std::string &descriptor) {
             size_t i = 1;
@@ -113,6 +130,37 @@ class Resolver {
                 c = descriptor.at(i);
             }
             return count;
+        }
+
+        static std::vector<JAVA_DATA_TYPE> parseMethodArgTypes(std::string &descriptor){
+            std::vector<JAVA_DATA_TYPE> out;
+            size_t i = 1;
+            char c = descriptor.at(i);
+            while (c != ')') {
+                JAVA_DATA_TYPE javaDataType = static_cast<JAVA_DATA_TYPE>(c);
+                if (c == 'L') {
+                    while (c != ';') {
+                        i++;
+                        c = descriptor.at(i);
+                    }
+                }
+                if (c == '[') {
+                    while (c == '[') {
+                        i++;
+                        c = descriptor.at(i);
+                    }
+                }
+                i++;
+                c = descriptor.at(i);
+                out.emplace_back(javaDataType);
+            }
+            return out;
+        }
+
+        static JAVA_DATA_TYPE parseMethodReturn(std::string &descriptor){
+            uint64_t pos = descriptor.find(')');
+            char c = descriptor.at(pos + 1);
+            return static_cast<JAVA_DATA_TYPE>(c);
         }
 
 };

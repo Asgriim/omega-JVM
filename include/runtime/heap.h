@@ -11,16 +11,16 @@
 //todo think about implementation
 
 struct MethodData {
-    CodeAttribute &codeAttribute;
-    //TODO rewrite on classes
+    CodeAttribute *codeAttribute;
     std::vector<JAVA_DATA_TYPE> localVarsType;
-//    std::vector<JClass*> localVarsType;
     bool isNative = false;
     bool isStatic = false;
     uint32_t argCount;
     std::string className;
     std::string name;
     std::string descriptor;
+    JAVA_DATA_TYPE returnType;
+    std::vector<JAnnotation> annotations;
 };
 
 struct MethodArea {

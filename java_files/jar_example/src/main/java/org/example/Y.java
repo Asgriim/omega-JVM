@@ -10,6 +10,11 @@ public class Y extends X{
         this.y = y;
     }
 
+    @Override
+    public int getI() {
+            return super.getI() + 14;
+        }
+
     public int getY() {
         return y;
     }

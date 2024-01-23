@@ -17,6 +17,9 @@ class BootstrapClassLoader {
         void loadMethodLocals(MethodData &methodData, ConstPoolList &constPool);
         void setJarFile(zip *jarFile);
         void loadInternalClasses(JAVA_DATA_TYPE javaDataType, std::string name);
+        void loadMethodAnnotations(MethodData &methodData, ClassFile &classFile, MethodInfo &methodInfo);
+        JAnnotation loadAnnotation(Annotation &annotation, ClassFile &classFile);
+        void loadMethods(ClassFile *classFile, std::string &jClassName);
 
 private:
         Heap *m_heap;

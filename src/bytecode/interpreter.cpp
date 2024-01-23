@@ -76,13 +76,13 @@ void Interpreter::execClInit(JClass &jClass) {
         return;
     }
     MethodData methodData = runtimeArea->getMethod(jClass.getClassName() + ".<clinit>:()V");
-    Frame frame(methodData.codeAttribute, jClass.getRuntimeCp());
+    Frame frame(*methodData.codeAttribute, jClass.getRuntimeCp());
     auto *vm = VM::getInstatance();
     vm->execFrame(frame);
 }
 
 Frame& Interpreter::createFrame(RuntimeCP &runtimeCp, MethodData &methodData, std::stack<Frame> &frameStack) {
-    Frame frame(methodData.codeAttribute, runtimeCp);
+    Frame frame(*methodData.codeAttribute, runtimeCp);
     frameStack.push(frame);
     auto &ref = frameStack.top();
     for (auto &type : methodData.localVarsType) {

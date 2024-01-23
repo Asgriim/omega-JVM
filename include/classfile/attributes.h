@@ -37,6 +37,7 @@ enum ATTRIBUTE_TYPE {
     BOOTSTRAP_METHODS_AT,
     LocalVariableTable_AT,
     METHOD_PARAMETERS_AT,
+    RUNTIME_VISIBLE_ANNOTATIONS_AT,
     //todo delete when implemnt all
     UNKNOWN_AT
 };
@@ -45,7 +46,8 @@ static std::unordered_map<std::string, ATTRIBUTE_TYPE> attr_map {
         {"Code",CODE_AT},
         {"BootstrapMethods",BOOTSTRAP_METHODS_AT},
         {"LocalVariableTable", LocalVariableTable_AT},
-        {"MethodParameters", METHOD_PARAMETERS_AT}
+        {"MethodParameters", METHOD_PARAMETERS_AT},
+        {"RuntimeVisibleAnnotations", RUNTIME_VISIBLE_ANNOTATIONS_AT}
 };
 
 struct AttributeInfo {
@@ -115,7 +117,43 @@ struct MethodParametersAttribute : public AttributeInfo {
     std::vector<MethodParameterEntry> parameters;
 };
 
+struct Value {
+    virtual ~Value() = default;
+};
 
+struct ConstValue : public Value {
+    uint16_t constValueIndex;
+};
 
+struct EnumConstValue : public Value {
+    uint16_t typeNameIndex;
+    uint16_t constNameIndex;
+};
+
+struct ClassInfoValue : public Value {
+    uint16_t classInfoIndex;
+};
+
+//why??? I don't understand this
+struct ElementValue {
+    uint8_t tag;
+    Value *value = nullptr;
+};
+
+struct ElementValuePair {
+    uint16_t elementNameIndex;
+    ElementValue value;
+};
+
+struct Annotation {
+    uint16_t typeIndex;
+    uint16_t numElementValuePairs;
+    std::vector<ElementValuePair> elementValuePairs;
+};
+
+struct RuntimeVisibleAnnotationsAttribute : public AttributeInfo {
+    uint16_t numAnnotations;
+    std::vector<Annotation> annotations;
+};
 
 #endif //OMEGA_JVM_ATTRIBUTES_H

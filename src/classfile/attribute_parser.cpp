@@ -27,6 +27,9 @@ void AttributeParser::parseAttributes(ClassFile &classFile, AttributesList &attr
                 readAttribute<LocalVariableTableAttribute>(attributes,i,attrNameInd,attrLength);
                 break;
             }
+            case RUNTIME_VISIBLE_ANNOTATIONS_AT:
+                readAttribute<RuntimeVisibleAnnotationsAttribute>(attributes,i,attrNameInd,attrLength);
+                break;
         }
     }
 }

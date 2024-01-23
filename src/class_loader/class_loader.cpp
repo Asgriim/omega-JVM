@@ -65,35 +65,7 @@ JClass BootstrapClassLoader::loadClass(const std::string& classPath) {
         declaredVars[fieldDescriptor] = jField;//TODO handle refs and arrays
         //            std::cout << fieldDescriptor << "\n";
     }
-
-    for (int i = 0; i < classFile->methodsCount; ++i) {
-        MethodInfo &methodInfo = classFile->methods[i];
-        auto &methodName = Resolver::resolveNameIndex(methodInfo, constPool);
-        auto &descriptor = Resolver::resolveDescriptor(methodInfo, constPool);
-
-        std::string methodFullName = std::format("{}.{}:{}", jClassName, methodName, descriptor);
-        for (int j = 0; j < methodInfo.attributesCount; ++j) {
-            auto &attr = *methodInfo.attributes[j];
-            ATTRIBUTE_TYPE attributeType = Resolver::resolveAttrType(constPool,attr.attributeNameIndex);
-
-            if (attributeType == ATTRIBUTE_TYPE::CODE_AT) {
-                auto &code = Resolver::getAttribute<CodeAttribute>(methodInfo.attributes,j);
-                MethodData methodData = {.codeAttribute = code, .isNative = static_cast<bool>((methodInfo.accessFlags & 0x0100))};
-                methodData.argCount = Resolver::getArgCount(descriptor);
-                methodData.name = methodName;
-                methodData.descriptor = descriptor;
-                methodData.className = jClassName;
-                methodData.isStatic = methodInfo.accessFlags & 0x0008;
-
-                loadMethodLocals(methodData,constPool);
-                if (!methodData.isStatic) {
-                    methodData.argCount++;
-                }
-                m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
-            }
-        }
-//        std::cout << "method name " << methodFullName <<"\n";
-    }
+    loadMethods(classFile,jClassName);
 
     m_heap->getJClassTable().insert({jClassName, jClass});
 
@@ -135,7 +107,7 @@ void BootstrapClassLoader::loadNative() {
         for (auto &methodName : it.second) {
             std::string methodFullName = std::format("{}.{}", clName, methodName);
 
-            MethodData methodData = {.codeAttribute = emptyCode, .isNative = true};
+            MethodData methodData = {.codeAttribute = &emptyCode, .isNative = true};
             methodData.className = clName;
             methodData.name = methodName;
             m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
@@ -148,11 +120,15 @@ void BootstrapClassLoader::setJarFile(zip *jarFile) {
 }
 
 void BootstrapClassLoader::loadMethodLocals(MethodData &methodData, ConstPoolList &constPool) {
-    AttributesList &attributesList = methodData.codeAttribute.attributes;
-    for (int i = 0; i < methodData.codeAttribute.attributesCount; ++i) {
+    AttributesList &attributesList = methodData.codeAttribute->attributes;
+    if (methodData.isNative) {
+        methodData.localVarsType = Resolver::parseMethodArgTypes(methodData.descriptor);
+        return;
+    }
+    for (int i = 0; i < methodData.codeAttribute->attributesCount; ++i) {
         if (attributesList[i]->attributeType == ATTRIBUTE_TYPE::LocalVariableTable_AT) {
             auto &localVars = Resolver::getAttribute<LocalVariableTableAttribute>(attributesList,i);
-            methodData.localVarsType = std::vector<JAVA_DATA_TYPE>(methodData.codeAttribute.maxLocals);
+            methodData.localVarsType = std::vector<JAVA_DATA_TYPE>(methodData.codeAttribute->maxLocals);
             for (auto &entry: localVars.localVariableTable) {
                 std::string &descriptor = Resolver::resovleUTF8str(constPool, entry.descriptorIndex);
                 methodData.localVarsType[entry.index] = static_cast<JAVA_DATA_TYPE>(descriptor.at(0));
@@ -160,5 +136,98 @@ void BootstrapClassLoader::loadMethodLocals(MethodData &methodData, ConstPoolLis
         }
     }
 }
+
+void BootstrapClassLoader::loadMethodAnnotations(MethodData &methodData, ClassFile &classFile, MethodInfo &methodInfo) {
+    RuntimeVisibleAnnotationsAttribute annotationsAttribute;
+    bool isFind = false;
+
+    for (int i = 0; i < methodInfo.attributesCount; ++i) {
+        if (methodInfo.attributes[i]->attributeType == ATTRIBUTE_TYPE::RUNTIME_VISIBLE_ANNOTATIONS_AT) {
+            isFind = true;
+            annotationsAttribute = Resolver::getAttribute<RuntimeVisibleAnnotationsAttribute>(methodInfo.attributes,i);
+        }
+    }
+
+    if (!isFind) {
+        return;
+    }
+
+    for (int i = 0; i < annotationsAttribute.numAnnotations; ++i) {
+        Annotation annotation = annotationsAttribute.annotations[i];
+        JAnnotation jAnnotation = loadAnnotation(annotation, classFile);
+        methodData.annotations.emplace_back(jAnnotation);
+    }
+}
+
+JAnnotation BootstrapClassLoader::loadAnnotation(Annotation &annotation, ClassFile &classFile) {
+    JAnnotation jAnnotation;
+    std::string className = Resolver::resovleUTF8str(classFile.constantPool, annotation.typeIndex);
+    std::erase(className,'L');
+    std::erase(className,';');
+//    JClass &jClass = RuntimeArea::getInstance()->getClass(className);
+    std::string simpleName;
+    uint64_t pos = className.find_last_of('/');
+    if (pos == std::string::npos) {
+        simpleName = className;
+    } else {
+        simpleName = className.substr(pos + 1);
+    }
+    jAnnotation.name = className;
+    jAnnotation.simpleName = simpleName;
+//    jAnnotation.jClass = &jClass;
+    jAnnotation.jClass = nullptr;
+    for (int i = 0; i < annotation.numElementValuePairs; ++i) {
+        JavaValue javaValue = Resolver::resolveElementValue(annotation.elementValuePairs[i], classFile);
+        std::string paramName = Resolver::resovleUTF8str(classFile.constantPool, annotation.elementValuePairs[i].elementNameIndex);
+        jAnnotation.params[paramName] = javaValue;
+    }
+    return jAnnotation;
+}
+
+void BootstrapClassLoader::loadMethods(ClassFile *classFile, std::string &jClassName) {
+    ConstPoolList &constPool = classFile->constantPool;
+    for (int i = 0; i < classFile->methodsCount; ++i) {
+        MethodInfo &methodInfo = classFile->methods[i];
+        auto &methodName = Resolver::resolveNameIndex(methodInfo, constPool);
+        auto &descriptor = Resolver::resolveDescriptor(methodInfo, constPool);
+
+        std::string methodFullName = std::format("{}.{}:{}", jClassName, methodName, descriptor);
+        bool isNative = methodInfo.accessFlags & 0x0100;
+        MethodData methodData = {.codeAttribute = nullptr, .isNative = isNative};
+        methodData.isStatic = methodInfo.accessFlags & 0x0008;
+        if (methodData.isNative && !methodData.isStatic) {
+            std::cerr << "METHOD " << methodFullName << "MUST BE STATIC" << "\n";
+            exit(-1);
+        }
+        for (int j = 0; j < methodInfo.attributesCount; ++j) {
+            auto &attr = *methodInfo.attributes[j];
+            ATTRIBUTE_TYPE attributeType = Resolver::resolveAttrType(constPool,attr.attributeNameIndex);
+
+            if (attributeType == ATTRIBUTE_TYPE::CODE_AT) {
+                auto &code = Resolver::getAttribute<CodeAttribute>(methodInfo.attributes,j);
+                methodData.codeAttribute = &code;
+            }
+        }
+
+        methodData.argCount = Resolver::getArgCount(descriptor);
+        methodData.name = methodName;
+        methodData.descriptor = descriptor;
+        methodData.className = jClassName;
+        //todo enum for acc flags of method
+
+        methodData.isNative = methodInfo.accessFlags & 0x0100;
+        methodData.returnType = Resolver::parseMethodReturn(descriptor);
+        loadMethodAnnotations(methodData, *classFile, methodInfo);
+        loadMethodLocals(methodData,constPool);
+        if (!methodData.isStatic) {
+            methodData.argCount++;
+        }
+        m_heap->getMethodArea().methodMap.insert({methodFullName, methodData});
+//        std::cout << "method name " << methodFullName <<"\n";
+    }
+}
+
+
+
 
 

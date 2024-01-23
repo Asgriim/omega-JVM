@@ -291,6 +291,67 @@ ClassFileStream &ClassFileStream::operator>>(LocalVariableTableAttribute &attrib
     return *this;
 }
 
+ClassFileStream &ClassFileStream::operator>>(RuntimeVisibleAnnotationsAttribute &attribute) {
+    attribute.numAnnotations = readU2();
+    attribute.attributeType = RUNTIME_VISIBLE_ANNOTATIONS_AT;
+    for (int i = 0; i < attribute.numAnnotations; ++i) {
+        Annotation annotation{};
+        *this >> annotation;
+        attribute.annotations.emplace_back(annotation);
+    }
+    return *this;
+}
+
+ClassFileStream &ClassFileStream::operator>>(Annotation &annotation) {
+    annotation.typeIndex = readU2();
+    annotation.numElementValuePairs = readU2();
+    for (int i = 0; i < annotation.numElementValuePairs; ++i) {
+        ElementValuePair elementValuePair{};
+        *this >> elementValuePair;
+        annotation.elementValuePairs.emplace_back(elementValuePair);
+    }
+    return *this;
+}
+
+ClassFileStream &ClassFileStream::operator>>(ElementValuePair &valuePair) {
+    valuePair.elementNameIndex = readU2();
+    ElementValue elementValue{};
+    elementValue.tag = readU1();
+    Value *value;
+    switch (elementValue.tag) {
+        case 'e': {
+            auto *constPtr = new EnumConstValue();
+            constPtr->typeNameIndex = readU2();
+            constPtr->constNameIndex = readU2();
+            value = constPtr;
+            break;
+        }
+        case 'c': {
+            auto *constPtr = new ClassInfoValue();
+            constPtr->classInfoIndex = readU2();
+            value = constPtr;
+            break;
+        }
+        case '[': {
+            std::cerr << "ARRAYS NOT IMPLEMENTED IN ANNOTATIONS\n";
+            exit(-1);
+        }
+        case '@': {
+            std::cerr << "NESTESD ANNOTATIONS NOT IMPLEMENTED\n";
+            exit(-1);
+        }
+        default: {
+            auto *constPtr = new ConstValue();
+            constPtr->constValueIndex = readU2();
+            value = constPtr;
+            break;
+        }
+    }
+    elementValue.value = value;
+    valuePair.value = elementValue;
+    return *this;
+}
+
 
 
 

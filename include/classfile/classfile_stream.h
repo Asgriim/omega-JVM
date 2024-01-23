@@ -94,6 +94,12 @@ class ClassFileStream {
 
         ClassFileStream &operator>>(LocalVariableTableAttribute &attribute);
 
+        ClassFileStream &operator>>(RuntimeVisibleAnnotationsAttribute &attribute);
+
+        ClassFileStream &operator>>(Annotation &annotation);
+
+        ClassFileStream &operator>>(ElementValuePair &valuePair);
+
     private:
         void allocBuf();
         void getFileLen();

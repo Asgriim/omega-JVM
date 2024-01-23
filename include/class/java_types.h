@@ -22,6 +22,7 @@ enum JAVA_DATA_TYPE : char {
     REF_ARR    = '[',
     LONG_JDT   = 'J',
     DOUBLE_JDT = 'D',
+    VOID_JDT   = 'V',
     STRING_CONST
 };
 
@@ -46,7 +47,6 @@ union DataContent {
     int16_t jShort;
     int32_t jInt;
     float jFloat;
-//todo reference implement
     RefInfoConst *refInfo;
     uint32_t jRetAddr;
     int64_t jLong;
@@ -104,6 +104,13 @@ struct JavaValue {
     JAVA_DATA_TYPE javaDataType;
     DataContent data;
 
+};
+
+struct JAnnotation {
+    std::string name;
+    std::string simpleName;
+    JClass *jClass;
+    std::unordered_map<std::string, JavaValue> params;
 };
 
 

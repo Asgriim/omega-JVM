@@ -1,6 +1,8 @@
 package org.example;
 
 
+import org.example.platform.DllImport;
+
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
@@ -21,7 +23,8 @@ public class Main {
         Y y1 = new Y(213);
         System.out.println(y1.getY());
         y1.setY(1488);
-        System.out.println(y1.getY());
+        System.out.println(y1.getI());
+//        write(1,null,1);
 //        Y y = new Y();
 //        y.getI();
 //        Y.setZ(1);
@@ -30,5 +33,7 @@ public class Main {
 //         System.out.println(Y.get());
     }
 
+    @DllImport("libc.s0.6")
+    public static native int write(int fd, char[] buf, int cout);
 
 }
