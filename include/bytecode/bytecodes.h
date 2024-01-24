@@ -83,5 +83,13 @@ enum BYTECODE : uint8_t {
     ISTORE_2       = 0x3d,
     ISTORE_3       = 0x3e,
     ISTORE         = 0x36,
+    IMUL           = 0x68,
+    IF_CMPEQ       = 0x9f,
+    IF_CMPNE       = 0xa0,
+    IF_CMPLT       = 0xa1,
+    IF_CMPGE       = 0xa2,
+    IF_CMPGT       = 0xa3,
+    IF_CMPLE       = 0xa4,
+    IINC           = 0x84,
 };
 #endif //OMEGA_JVM_BYTECODES_H

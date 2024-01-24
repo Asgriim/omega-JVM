@@ -54,6 +54,19 @@ ByteOpMap Interpreter::m_byteOpMap = {
         {BYTECODE::ISTORE_2, jbcf::astore_2},
         {BYTECODE::ISTORE_3, jbcf::astore_3},
         {BYTECODE::ISTORE, jbcf::astore},
+        {BYTECODE::ARRAY_LENGTH, jbcf::arraylength},
+        {BYTECODE::IMUL, jbcf::imul},
+        {BYTECODE::IF_CMPEQ, jbcf::if_icmpeq},
+        {BYTECODE::IF_CMPNE, jbcf::if_icmpne},
+        {BYTECODE::IF_CMPLT, jbcf::if_icmplt},
+        {BYTECODE::IF_CMPGE, jbcf::if_icmpge},
+        {BYTECODE::IF_CMPGT, jbcf::if_icmpgt},
+        {BYTECODE::IF_CMPLE, jbcf::if_icmple},
+        {BYTECODE::CALOAD, jbcf::caload},
+        {BYTECODE::CASTORE, jbcf::castore},
+        {BYTECODE::IINC, jbcf::iinc},
+        {BYTECODE::GOTO, jbcf::jgoto},
+        {BYTECODE::ARETURN, jbcf::ireturn},
 };
 
 void Interpreter::execute(BYTECODE code, Frame &frame, std::stack<Frame> &stack) {
@@ -129,7 +142,7 @@ void Interpreter::platformInvoke(MethodData &methodData, Frame &frame, std::stac
         exit(-1);
     }
     const char* dll = dllAnnotation.params.find("value")->second.data.string->data();
-    std::cout << "name " << dll << "\n";
+//    std::cout << "name " << dll << "\n";
     void *lib = dlopen(dll, RTLD_LAZY );
     if (lib == nullptr) {
         std::cerr << "DLL NOT FOUND " << dll << '\n';

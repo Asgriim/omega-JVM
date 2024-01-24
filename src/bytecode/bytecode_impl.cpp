@@ -195,34 +195,7 @@ namespace jbcf {
         std::string fieldFullName = Resolver::resoveFieldFullName(frame.runtimeCp.getConstPool(),index);
         RuntimeArea *runtimeArea = RuntimeArea::getInstance();
         JavaValue &javaType = runtimeArea->getField(fieldFullName).value;
-        switch (javaType.javaDataType) {
-
-            case BOOL_JDT:
-                break;
-            case BYTE_JDT:
-                break;
-            case CHAR_JDT:
-                break;
-            case SHORT_JDT:
-                break;
-            case INT_JDT: {
-                javaType.data.jInt = frame.operandStack.top().data.jInt;
-                break;
-            }
-
-            case FLOAT_JDT:
-                break;
-            case REF_JDT:
-                break;
-            case REF_ARR:
-                break;
-            case LONG_JDT:
-                break;
-            case DOUBLE_JDT:
-                break;
-            case STRING_CONST:
-                break;
-        }
+        javaType = frame.operandStack.top();
         frame.operandStack.pop();
     }
 
@@ -274,7 +247,6 @@ namespace jbcf {
 
     void ireturn(Frame &frame, std::stack<Frame> &stack) {
         if (!stack.empty()) {
-
             auto i = frame.operandStack.top();
             stack.pop();
             stack.top().operandStack.push(i);
@@ -399,8 +371,13 @@ namespace jbcf {
     void iaload(Frame &frame, std::stack<Frame> &stack) {
         uint32_t ind = frame.operandStack.top().data.jInt;
         frame.operandStack.pop();
-        int *arr = static_cast<int *>(frame.operandStack.top().data.jArray->array);
+        JavaValue javaArr = frame.operandStack.top();
+        int *arr = static_cast<int *>(javaArr.data.jArray->array);
         JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
+        if (ind >= javaArr.data.jArray->length) {
+            std::cerr << "ArrayIndexOutOfBoundsException\n";
+            exit(-1);
+        }
         javaValue.data.jInt = arr[ind];
         frame.operandStack.pop();
         frame.operandStack.push(javaValue);
@@ -502,6 +479,161 @@ namespace jbcf {
         arr[ind] = value;
         frame.operandStack.pop();
     }
+
+    void arraylength(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue javaValue = frame.operandStack.top();
+        JavaValue retVal = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
+        retVal.data.jInt = javaValue.data.jArray->length;
+        frame.operandStack.pop();
+        frame.operandStack.push(retVal);
+
+    }
+
+    void imul(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue retVal = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
+        retVal.data.jInt = op1.data.jInt * op2.data.jInt;
+        frame.operandStack.push(retVal);
+    }
+
+    //TODO lazy. Refactor
+    void if_icmpeq(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt == op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void if_icmpne(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt != op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void if_icmplt(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt < op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void if_icmpgt(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt > op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void if_icmple(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt <= op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void if_icmpge(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue op2 = frame.operandStack.top();
+        frame.operandStack.pop();
+        JavaValue op1 = frame.operandStack.top();
+        frame.operandStack.pop();
+
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+
+        if (op1.data.jInt >= op2.data.jInt) {
+            frame.pc -= 3;
+            frame.pc += index;
+        }
+    }
+
+    void caload(Frame &frame, std::stack<Frame> &stack) {
+        uint32_t ind = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        JavaValue javaArr = frame.operandStack.top();
+        char *arr = static_cast<char *>(javaArr.data.jArray->array);
+        JavaValue javaValue = JavaValue::createByType(JAVA_DATA_TYPE::CHAR_JDT);
+        if (ind >= javaArr.data.jArray->length) {
+            std::cerr << "ArrayIndexOutOfBoundsException\n";
+            exit(-1);
+        }
+        javaValue.data.jChar = arr[ind];
+        frame.operandStack.pop();
+        frame.operandStack.push(javaValue);
+    }
+
+    void iinc(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        uint8_t index = frame.methodBytecode.code[frame.pc];
+        frame.pc++;
+        int8_t cnst = frame.methodBytecode.code[frame.pc];
+        frame.locals[index].data.jInt += cnst;
+    }
+
+    void jgoto(Frame &frame, std::stack<Frame> &stack) {
+        frame.pc++;
+        int16_t index = frame.methodBytecode.code[frame.pc] << 8;
+        frame.pc++;
+        index |= frame.methodBytecode.code[frame.pc];
+        frame.pc -= 3;
+        frame.pc += index;
+    }
+
 
 
 }

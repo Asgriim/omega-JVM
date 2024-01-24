@@ -89,6 +89,27 @@ namespace jbcf {
 
     void castore(Frame &frame, std::stack<Frame> &stack);
 
+    void arraylength(Frame &frame, std::stack<Frame> &stack);
+
+    void imul(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmpeq(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmpne(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmplt(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmpgt(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmple(Frame &frame, std::stack<Frame> &stack);
+
+    void if_icmpge(Frame &frame, std::stack<Frame> &stack);
+
+    void caload(Frame &frame, std::stack<Frame> &stack);
+
+    void iinc(Frame &frame, std::stack<Frame> &stack);
+
+    void jgoto(Frame &frame, std::stack<Frame> &stack);
 }
 
 
