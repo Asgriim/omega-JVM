@@ -150,6 +150,7 @@ void Interpreter::platformInvoke(MethodData &methodData, Frame &frame, std::stac
     }
     void* target = dlsym(lib, methodData.name.data());
     if (target == nullptr) {
+        dlclose(lib);
         std::cerr << "DLL FUNCTION NOT FOUND " << methodData.name << '\n';
         exit(-1);
     }
@@ -368,5 +369,6 @@ void Interpreter::platformInvoke(MethodData &methodData, Frame &frame, std::stac
         case STRING_CONST:
             break;
     }
+    dlclose(lib);
     frame.operandStack.push(retVal);
 }

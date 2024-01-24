@@ -77,7 +77,7 @@ void test() {
     void *arg3 = a3;
     void *arg4 = a4;
     void *arg5 = a5;
-    printf("123 %s %s %s %s %s %s %s \n",a1,a2,a3,a4,a5,a6,a7,a6,a7,a1);
+    printf("123 %s %s %s %s %s %s %s \n",a1,a2,a3,a4,a5,a6,a7,a6,a7);
 
     char* args[6];
     args[0] = zalupa;

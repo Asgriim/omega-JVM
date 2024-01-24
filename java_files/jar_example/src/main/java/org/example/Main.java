@@ -9,10 +9,11 @@ import org.example.platform.Str;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        char[] a = {'a'};
+        char[] a = "in 2 str: ".toCharArray();
         Str str0 = new Str(a);
         Str in = Console.readLine();
-        Console.print(in);
+        str0.add(in);
+        Console.print(str0);
     }
 
 
