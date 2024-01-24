@@ -87,6 +87,8 @@ namespace jbcf {
 
     void getfield(Frame &frame, std::stack<Frame> &stack);
 
+    void castore(Frame &frame, std::stack<Frame> &stack);
+
 }
 
 

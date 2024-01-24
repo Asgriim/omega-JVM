@@ -13,6 +13,7 @@ class Interpreter {
         static void execNative(std::string &methodFullName, Frame &frame, std::stack<Frame> &stack);
         static void execClInit(JClass &jClass);
         static Frame& createFrame(RuntimeCP &runtimeCp, MethodData &methodData, std::stack<Frame> &frameStack);
+        static void platformInvoke(MethodData &methodData, Frame &frame, std::stack<Frame> &stack);
     private:
         static ByteOpMap m_byteOpMap;
     };

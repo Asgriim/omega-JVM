@@ -19,6 +19,9 @@ static std::unordered_map<std::string, std::vector<std::string>> nativeClasMetho
         },
         {"java/lang/Object",
             {"<init>:()V"}
+        },
+        {
+            "java/lang/String", {"toCharArray:()[C"}
         }
 };
 
@@ -29,6 +32,9 @@ static std::unordered_map<std::string, std::vector<std::string>> nativeClasField
         {"java/lang/Object",
             {}
         },
+        {"java/lang/String",
+                {}
+        },
         {"java/io/PrintStream", {}}
 };
 
@@ -36,12 +42,14 @@ static std::unordered_map<std::string, std::vector<std::string>> nativeClasField
 
 namespace native {
     void println_str(Frame &frame, std::stack<Frame> &stack);
+    void toCharArray(Frame &frame, std::stack<Frame> &stack);
 }
 
 
 static std::unordered_map<std::string, std::function<void(Frame &, std::stack<Frame> &)>> nativeMap = {
         {"java/io/PrintStream.println:(Ljava/lang/String;)V", native::println_str},
-        {"java/io/PrintStream.println:(I)V", native::println_str}
+        {"java/io/PrintStream.println:(I)V", native::println_str},
+        {"java/lang/String.toCharArray:()[C", native::toCharArray}
 };
 
 #endif //OMEGA_JVM_NATIVE_H

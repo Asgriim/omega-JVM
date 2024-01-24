@@ -26,10 +26,19 @@ enum JAVA_DATA_TYPE : char {
     STRING_CONST
 };
 
-
+enum JARR_TYPE {
+    T_BOOLEAN = 4,
+    T_CHAR    = 5,
+    T_FLOAT   = 6,
+    T_DOUBLE  = 7,
+    T_BYTE    = 8,
+    T_SHORT   = 9,
+    T_INT     = 10,
+    T_LONG    = 11
+};
 
 struct JArray {
-    uint8_t type;
+    JARR_TYPE type;
     void *array;
     uint32_t length;
 };
@@ -43,7 +52,7 @@ struct ObjectInstance {
 union DataContent {
     bool jBool;
     int8_t jbyte;
-    uint16_t jChar;
+    char jChar;
     int16_t jShort;
     int32_t jInt;
     float jFloat;

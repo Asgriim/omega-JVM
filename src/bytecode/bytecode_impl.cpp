@@ -244,8 +244,13 @@ namespace jbcf {
         MethodData &methodData = runtimeArea->getMethod(methodName);
 
         if (methodData.isNative) {
-            nativeMap.find(methodName)->second(frame, stack);
+            if (nativeMap.contains(methodName)) {
+                nativeMap.find(methodName)->second(frame, stack);
+                return;
+            }
+            Interpreter::platformInvoke(methodData,frame,stack);
             return;
+
         }
         JClass &jclass = runtimeArea->getClass(methodData.className);
 //        Frame newFrame(methodData.codeAttribute, jclass.getRuntimeCp());
@@ -324,7 +329,7 @@ namespace jbcf {
             }
 
         }
-        javaValue.data.jArray = new JArray{.type = byte, .array = ptr};
+        javaValue.data.jArray = new JArray{.type = static_cast<JARR_TYPE>(byte), .array = ptr, .length = count};
         frame.operandStack.push(javaValue);
     }
 
@@ -486,6 +491,16 @@ namespace jbcf {
         } else {
             std::cerr << std::format("FIELD NOT FOUND: {} \n", nameAndType);
         }
+    }
+
+    void castore(Frame &frame, std::stack<Frame> &stack) {
+        int32_t value = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        uint32_t ind = frame.operandStack.top().data.jInt;
+        frame.operandStack.pop();
+        char *arr = static_cast<char*>(frame.operandStack.top().data.jArray->array);
+        arr[ind] = value;
+        frame.operandStack.pop();
     }
 
 

@@ -25,7 +25,7 @@ enum BYTECODE : uint8_t {
     ASTORE_0       = 0x4B,
     ASTORE_1       = 0x4c,
     ASTORE_2       = 0x4d,
-    ASTORE_3       = 0x4B,
+    ASTORE_3       = 0x4e,
     ATHROW         = 0xbf,
     BALOAD         = 0x33,
     BASTORE        = 0x54,
@@ -76,6 +76,12 @@ enum BYTECODE : uint8_t {
     SIPUSH         = 0x11,
     INVOKESPECIAL  = 0xb7,
     PUTFIELD       = 0xb5,
-    GETFIELD       = 0xb4
+    GETFIELD       = 0xb4,
+    CASTORE        = 0x55,
+    ISTORE_0       = 0x3b,
+    ISTORE_1       = 0x3c,
+    ISTORE_2       = 0x3d,
+    ISTORE_3       = 0x3e,
+    ISTORE         = 0x36,
 };
 #endif //OMEGA_JVM_BYTECODES_H

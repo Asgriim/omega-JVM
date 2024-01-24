@@ -24,7 +24,13 @@ public class Main {
         System.out.println(y1.getY());
         y1.setY(1488);
         System.out.println(y1.getI());
-//        write(1,null,1);
+        char[] a = {'a','1','\n'};
+//        int l = a.length;
+//        System.out.println(l);
+        //todo
+        char[] b = "123".toCharArray();
+        int w = write(1, b,3);
+        System.out.println(w);
 //        Y y = new Y();
 //        y.getI();
 //        Y.setZ(1);
@@ -33,7 +39,7 @@ public class Main {
 //         System.out.println(Y.get());
     }
 
-    @DllImport("libc.s0.6")
+    @DllImport("libc.so.6")
     public static native int write(int fd, char[] buf, int cout);
 
 }

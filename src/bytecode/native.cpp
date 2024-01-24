@@ -50,4 +50,17 @@ namespace native {
         frame.operandStack.pop();
         frame.operandStack.pop();
     }
+
+    void toCharArray(Frame &frame, std::stack<Frame> &stack) {
+        JavaValue javaValue = frame.operandStack.top();
+        JavaValue retVal = JavaValue::createByType(REF_ARR);
+        JArray *jArray = new JArray();
+        jArray->array = (void*)javaValue.data.string->data();
+        jArray->type = JARR_TYPE::T_CHAR;
+        jArray->length = javaValue.data.string->size();
+        retVal.data.jArray = jArray;
+
+        frame.operandStack.pop();
+        frame.operandStack.push(retVal);
+    }
 }
