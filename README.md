@@ -1,4 +1,5 @@
 # Omega-JVM
+Проект в разработке, ~~говнокод~~ спорные решения будут дорабатываться в следующих версиях.
 
 ## Как
 ``git clone``
@@ -16,7 +17,8 @@
 
 Работоспособность остальных файлов не гарантируется.
 
-## Что умеет 
+## Что умеет
+
 ``java/lang/*`` классы не поддерживаются, но реализован [P/invoke](https://en.wikipedia.org/wiki/Platform_Invocation_Services) для вызова нативных функций из dll линуха. [Пример](https://github.com/Asgriim/omega-JVM/blob/main/java_files/jar_example/src/main/java/org/example/platform/Console.java).
 [Пример2](https://github.com/Asgriim/omega-JVM/blob/main/java_files/jar_example/src/main/java/org/example/Main.java).
 

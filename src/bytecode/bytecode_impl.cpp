@@ -145,46 +145,38 @@ namespace jbcf {
         }
     }
 
-    void iconst_m1(Frame &frame, std::stack<Frame> &stack) {
+    void iconst(Frame &frame, std::stack<Frame> &stack, int value) {
         JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = -1;
+        javaType.data.jInt = value;
         frame.operandStack.push(javaType);
+    }
+
+    void iconst_m1(Frame &frame, std::stack<Frame> &stack) {
+        iconst(frame, stack, -1);
     }
 
     void iconst_0(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 0;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 0);
     }
 
     void iconst_1(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 1;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 1);
     }
 
     void iconst_2(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 2;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 2);
     }
 
     void iconst_3(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 3;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 3);
     }
 
     void iconst_4(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 4;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 4);
     }
 
     void iconst_5(Frame &frame, std::stack<Frame> &stack) {
-        JavaValue javaType = JavaValue::createByType(JAVA_DATA_TYPE::INT_JDT);
-        javaType.data.jInt = 5;
-        frame.operandStack.push(javaType);
+        iconst(frame, stack, 5);
     }
 
     void putstatic(Frame &frame, std::stack<Frame> &stack) {
